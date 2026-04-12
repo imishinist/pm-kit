@@ -25,34 +25,38 @@ The AI will guide you through an interactive setup.
 Manual alternative:
 
 ```bash
-pm-kit create <name> --path <path>
+uv run pm-kit create <name> --path <path>
+```
+
+### Update a project
+
+Update project prompts and skills from the latest scaffold templates:
+
+```bash
+uv run pm-kit update <path>
 ```
 
 ### Sync data (run in project directory)
 
 ```bash
-pm-kit sync jira          # Sync Jira tickets and sprints
-pm-kit sync slack         # Sync Slack messages
-pm-kit sync confluence    # Sync Confluence pages
+uv run pm-kit sync jira          # Sync Jira tickets and sprints
+uv run pm-kit sync slack         # Sync Slack messages
+uv run pm-kit sync confluence    # Sync Confluence pages
 ```
 
-### Daily check (run in project directory)
+### Show sync output JSON schema
 
 ```bash
-pm-kit daily              # Gather synced data and output analysis context
+uv run pm-kit schema jira        # Show Jira sync output schema
+uv run pm-kit schema slack       # Show Slack sync output schema
+uv run pm-kit schema confluence  # Show Confluence sync output schema
 ```
 
 ### Generate adapter configs (run in project directory)
 
 ```bash
-pm-kit adapter claude     # Generate CLAUDE.md, .claude/skills/
-pm-kit adapter kiro       # Generate .kiro/steering/
-```
-
-### Cross-project overview
-
-```bash
-pm-kit overview           # Show all projects and aggregated risks
+uv run pm-kit adapter claude     # Generate CLAUDE.md, .claude/skills/
+uv run pm-kit adapter kiro       # Generate .kiro/steering/
 ```
 
 ## Repository structure
@@ -60,16 +64,18 @@ pm-kit overview           # Show all projects and aggregated risks
 ```
 pm-kit/
 ├── src/pm_kit/           # CLI + core logic
-│   ├── cli.py            # Entry point
+│   ├── cli.py            # Entry point (Click)
 │   ├── create.py         # Project scaffolding
-│   ├── daily.py          # Daily check
-│   ├── overview.py       # Cross-project overview
+│   ├── update.py         # Project update
+│   ├── schema.py         # Sync output JSON schema
 │   ├── project.py        # project.yaml loader
-│   ├── sync/             # Jira, Slack, Confluence sync
-│   └── adapter/          # Claude Code, Kiro adapters
-├── scaffold/             # Project scaffold templates
+│   ├── sync/             # Jira, Slack, Confluence data fetchers
+│   └── adapter/          # Claude Code, Kiro config generators
+├── scaffold/             # Project scaffold templates (.template files use Jinja2)
+│   ├── skills/           # Agent skill definitions
+│   └── prompts/          # AI instruction prompts
 ├── knowledge/            # PM knowledge base
-├── prompts/              # AI instruction prompts
+├── prompts/              # AI instruction prompts (for pm-kit repo itself)
 ├── tests/                # Tests
 └── docs/design.md        # Design document
 ```
