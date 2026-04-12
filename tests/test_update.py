@@ -32,8 +32,8 @@ def test_update_modified_file_skip(tmp_path, monkeypatch):
     project_dir = _create_project(tmp_path, monkeypatch)
 
     # Modify a prompt file
-    daily = project_dir / "prompts" / "daily-check.md"
-    daily.write_text(daily.read_text() + "\n## Custom Rule\n")
+    system = project_dir / "prompts" / "system.md"
+    system.write_text(system.read_text() + "\n## Custom Rule\n")
 
     runner = CliRunner()
     result = runner.invoke(main, ["update", str(project_dir)], input="n\n")
@@ -41,22 +41,22 @@ def test_update_modified_file_skip(tmp_path, monkeypatch):
     assert result.exit_code == 0, result.output
     assert "1 skipped" in result.output
     # File should still have custom content
-    assert "## Custom Rule" in daily.read_text()
+    assert "## Custom Rule" in system.read_text()
 
 
 def test_update_modified_file_overwrite(tmp_path, monkeypatch):
     project_dir = _create_project(tmp_path, monkeypatch)
 
-    daily = project_dir / "prompts" / "daily-check.md"
-    daily.write_text(daily.read_text() + "\n## Custom Rule\n")
+    system = project_dir / "prompts" / "system.md"
+    system.write_text(system.read_text() + "\n## Custom Rule\n")
 
     runner = CliRunner()
     result = runner.invoke(main, ["update", str(project_dir)], input="y\n")
 
     assert result.exit_code == 0, result.output
-    assert "updated: prompts/daily-check.md" in result.output
+    assert "updated: prompts/system.md" in result.output
     # Custom content should be gone
-    assert "## Custom Rule" not in daily.read_text()
+    assert "## Custom Rule" not in system.read_text()
 
 
 def test_update_new_file_added(tmp_path, monkeypatch):

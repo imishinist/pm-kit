@@ -23,11 +23,7 @@ def test_create_generates_directory_structure(tmp_path, monkeypatch):
 
     # Copied prompts
     assert (project_dir / "prompts" / "system.md").is_file()
-    assert (project_dir / "prompts" / "daily-check.md").is_file()
     assert (project_dir / "prompts" / "risk-review.md").is_file()
-    assert (project_dir / "prompts" / "sync-jira.md").is_file()
-    assert (project_dir / "prompts" / "sync-slack.md").is_file()
-    assert (project_dir / "prompts" / "sync-confluence.md").is_file()
 
     # Copied skills
     assert (project_dir / "skills" / "sync-jira.md").is_file()

@@ -75,11 +75,7 @@ pm-kit/
 │   ├── policy.md.template
 │   ├── prompts/
 │   │   ├── system.md            ← 共通行動規範
-│   │   ├── daily-check.md
-│   │   ├── risk-review.md
-│   │   ├── sync-jira.md
-│   │   ├── sync-slack.md
-│   │   └── sync-confluence.md
+│   │   └── risk-review.md
 │   ├── skills/                  ← agent 用 skill テンプレート
 │   │   ├── sync-jira.md
 │   │   ├── sync-slack.md
@@ -119,8 +115,7 @@ my-project/
 │
 ├── prompts/                     ← pm-kitからコピー（PJ固有に編集可）
 │   ├── system.md
-│   ├── daily-check.md
-│   └── ...
+│   └── risk-review.md
 ├── skills/                      ← pm-kitからコピー（agent 用 skill 定義）
 │   ├── sync-jira.md
 │   ├── sync-slack.md
@@ -363,13 +358,11 @@ PJディレクトリで coding agent が実行する skill 定義。`scaffold/sk
 
 | コマンド | 役割 | 備考 |
 |----------|------|------|
-| `pm-kit create` | PJ スキャフォルド生成 | CLI として残す |
-| `pm-kit update` | PJ プロンプト更新 | CLI として残す |
+| `pm-kit create` | PJ スキャフォルド生成 | |
+| `pm-kit update` | PJ プロンプト・skills 更新 | |
 | `pm-kit sync <source>` | 外部データ取得（生JSON出力） | skills から呼ばれる |
 | `pm-kit schema <source>` | sync の出力JSONスキーマ表示 | skills から参照 |
-| `pm-kit adapter` | AIツール設定生成 | CLI として残す |
-| `pm-kit daily` | → skills/daily-check で代替 | 将来的に廃止 |
-| `pm-kit overview` | → skills/overview で代替 | 将来的に廃止 |
+| `pm-kit adapter` | AIツール設定生成 | |
 
 ## 実装フェーズ
 
