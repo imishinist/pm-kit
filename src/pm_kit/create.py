@@ -108,6 +108,7 @@ def create(name: str, dest_path: str | None) -> None:
         "data/slack",
         "data/confluence",
         "data/meetings",
+        "data/repos",
         "decisions",
     ]:
         (project_dir / subdir).mkdir(parents=True)
