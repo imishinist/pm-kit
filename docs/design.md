@@ -221,7 +221,7 @@ PJディレクトリの `.envrc` に格納（.gitignore 対象）:
 export JIRA_URL="https://company.atlassian.net"
 export JIRA_USER="user@example.com"
 export JIRA_API_TOKEN="..."
-export SLACK_BOT_TOKEN="xoxb-..."
+export SLACK_USER_TOKEN="xoxp-..."
 export CONFLUENCE_URL="https://company.atlassian.net/wiki"
 export CONFLUENCE_USER="user@example.com"
 export CONFLUENCE_API_TOKEN="..."

@@ -11,9 +11,9 @@ import requests
 
 
 def _token() -> str:
-    token = os.environ.get("SLACK_BOT_TOKEN", "")
+    token = os.environ.get("SLACK_USER_TOKEN", "")
     if not token:
-        raise click.ClickException("SLACK_BOT_TOKEN must be set in environment")
+        raise click.ClickException("SLACK_USER_TOKEN must be set in environment")
     return token
 
 
