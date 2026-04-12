@@ -118,6 +118,7 @@ def create(name: str, dest_path: str | None) -> None:
         "data/meetings",
         "data/repos",
         "decisions",
+        "notes",
     ]:
         d = project_dir / subdir
         d.mkdir(parents=True)
