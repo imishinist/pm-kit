@@ -100,9 +100,6 @@ def create(name: str, dest_path: str | None) -> None:
     # Copy prompts/
     shutil.copytree(scaffold_dir / "prompts", project_dir / "prompts")
 
-    # Copy skills/
-    shutil.copytree(scaffold_dir / "skills", project_dir / "skills")
-
     # Create empty directories
     for subdir in [
         "data/jira",

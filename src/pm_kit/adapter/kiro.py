@@ -7,7 +7,7 @@ import yaml
 
 
 def generate_kiro_config(project_dir: Path) -> list[str]:
-    """Generate .kiro/steering/ files in the project directory.
+    """Generate .kiro/steering/ and .kiro/skills/ files in the project directory.
 
     Returns a list of file paths that were created/updated.
     """
@@ -16,26 +16,37 @@ def generate_kiro_config(project_dir: Path) -> list[str]:
         yaml.safe_load(config_path.read_text()) if config_path.exists() else {}
     )
     project_name: str = config.get("name", "project")
+    pm_kit_path: str = config.get("pm_kit_path", "")
+    run_prefix = f"uv run --project {pm_kit_path} pm-kit" if pm_kit_path else "pm-kit"
 
     created: list[str] = []
 
     steering_dir = project_dir / ".kiro" / "steering"
     steering_dir.mkdir(parents=True, exist_ok=True)
 
-    files = _build_steering_files(project_dir, config, project_name)
+    files = _build_steering_files(project_dir, config, project_name, run_prefix)
     for filename, content in files.items():
         (steering_dir / filename).write_text(content)
         created.append(f".kiro/steering/{filename}")
+
+    # Deploy scaffold/skills/*.md -> .kiro/skills/<name>/SKILL.md
+    skills_src = Path(pm_kit_path) / "scaffold" / "skills" if pm_kit_path else project_dir / "skills"
+    if skills_src.exists():
+        for md in sorted(skills_src.glob("*.md")):
+            name = md.stem
+            dest_dir = project_dir / ".kiro" / "skills" / name
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            (dest_dir / "SKILL.md").write_text(md.read_text())
+            created.append(f".kiro/skills/{name}/SKILL.md")
 
     return created
 
 
 def _build_steering_files(
-    project_dir: Path, _config: dict[str, Any], project_name: str
+    project_dir: Path, _config: dict[str, Any], project_name: str, run_prefix: str
 ) -> dict[str, str]:
     files: dict[str, str] = {}
 
-    # product.md — product context
     lines = [
         f"# {project_name}",
         "",
@@ -54,10 +65,10 @@ def _build_steering_files(
         "## Available Commands",
         "",
         "```bash",
-        "pm-kit daily              # Daily check",
-        "pm-kit sync jira          # Sync Jira",
-        "pm-kit sync slack         # Sync Slack",
-        "pm-kit sync confluence    # Sync Confluence",
+        f"{run_prefix} daily              # Daily check",
+        f"{run_prefix} sync jira          # Sync Jira",
+        f"{run_prefix} sync slack         # Sync Slack",
+        f"{run_prefix} sync confluence    # Sync Confluence",
         "```",
         "",
     ]
@@ -72,7 +83,6 @@ def _build_steering_files(
 
     files["product.md"] = "\n".join(lines)
 
-    # tech.md — technical context
     files["tech.md"] = "\n".join(
         [
             "# Tech Stack",
