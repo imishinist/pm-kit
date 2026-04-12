@@ -25,19 +25,12 @@ def test_create_generates_directory_structure(tmp_path, monkeypatch):
     assert (project_dir / "prompts" / "system.md").is_file()
     assert (project_dir / "prompts" / "risk-review.md").is_file()
 
-    # Copied skills
-    assert (project_dir / "skills" / "sync-jira.md").is_file()
-    assert (project_dir / "skills" / "sync-slack.md").is_file()
-    assert (project_dir / "skills" / "sync-confluence.md").is_file()
-    assert (project_dir / "skills" / "daily-check.md").is_file()
-    assert (project_dir / "skills" / "overview.md").is_file()
-
-    # Empty directories
-    assert (project_dir / "data" / "jira").is_dir()
-    assert (project_dir / "data" / "slack").is_dir()
-    assert (project_dir / "data" / "confluence").is_dir()
-    assert (project_dir / "data" / "meetings").is_dir()
-    assert (project_dir / "decisions").is_dir()
+    # Empty directories with .gitkeep
+    assert (project_dir / "data" / "jira" / ".gitkeep").is_file()
+    assert (project_dir / "data" / "slack" / ".gitkeep").is_file()
+    assert (project_dir / "data" / "confluence" / ".gitkeep").is_file()
+    assert (project_dir / "data" / "meetings" / ".gitkeep").is_file()
+    assert (project_dir / "decisions" / ".gitkeep").is_file()
 
     # Symlinks
     assert (project_dir / "knowledge").is_symlink()

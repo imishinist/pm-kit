@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -82,6 +83,15 @@ def create(name: str, dest_path: str | None) -> None:
 
     project_dir.mkdir(parents=True)
 
+    # Initialize git repo with empty commit
+    subprocess.run(["git", "init"], cwd=project_dir, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "commit", "--allow-empty", "-m", "initial commit"],
+        cwd=project_dir,
+        check=True,
+        capture_output=True,
+    )
+
     # Render .template files
     templates = {
         scaffold_dir / "project.yaml.template": project_dir / "project.yaml",
@@ -109,7 +119,9 @@ def create(name: str, dest_path: str | None) -> None:
         "data/repos",
         "decisions",
     ]:
-        (project_dir / subdir).mkdir(parents=True)
+        d = project_dir / subdir
+        d.mkdir(parents=True)
+        (d / ".gitkeep").touch()
 
     # Symlinks
     (project_dir / "knowledge").symlink_to(pm_kit_root / "knowledge")

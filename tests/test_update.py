@@ -3,6 +3,7 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
+from pm_kit.adapter.kiro import generate_kiro_config
 from pm_kit.cli import main
 from pm_kit.create import get_pm_kit_root
 
@@ -13,6 +14,12 @@ def _create_project(tmp_path, monkeypatch) -> Path:
     runner = CliRunner()
     result = runner.invoke(main, ["create", "my-project", "--path", str(project_dir)])
     assert result.exit_code == 0, result.output
+    return project_dir
+
+
+def _create_project_with_kiro(tmp_path, monkeypatch) -> Path:
+    project_dir = _create_project(tmp_path, monkeypatch)
+    generate_kiro_config(project_dir)
     return project_dir
 
 
@@ -92,11 +99,20 @@ def test_update_no_prompts_dir(tmp_path, monkeypatch):
     assert (project_dir / "prompts" / "system.md").is_file()
 
 
-def test_update_skills_modified(tmp_path, monkeypatch):
-    project_dir = _create_project(tmp_path, monkeypatch)
+def test_update_kiro_skills_no_changes(tmp_path, monkeypatch):
+    project_dir = _create_project_with_kiro(tmp_path, monkeypatch)
 
-    # Modify a skill file
-    skill = project_dir / "skills" / "sync-jira.md"
+    runner = CliRunner()
+    result = runner.invoke(main, ["update", str(project_dir)])
+
+    assert result.exit_code == 0, result.output
+    assert "0 skipped" in result.output
+
+
+def test_update_kiro_skills_modified_skip(tmp_path, monkeypatch):
+    project_dir = _create_project_with_kiro(tmp_path, monkeypatch)
+
+    skill = project_dir / ".kiro" / "skills" / "sync-jira" / "SKILL.md"
     skill.write_text(skill.read_text() + "\n## Custom Step\n")
 
     runner = CliRunner()
@@ -107,14 +123,15 @@ def test_update_skills_modified(tmp_path, monkeypatch):
     assert "## Custom Step" in skill.read_text()
 
 
-def test_update_skills_no_dir(tmp_path, monkeypatch):
-    project_dir = _create_project(tmp_path, monkeypatch)
+def test_update_kiro_skills_modified_overwrite(tmp_path, monkeypatch):
+    project_dir = _create_project_with_kiro(tmp_path, monkeypatch)
 
-    shutil.rmtree(project_dir / "skills")
+    skill = project_dir / ".kiro" / "skills" / "sync-jira" / "SKILL.md"
+    skill.write_text(skill.read_text() + "\n## Custom Step\n")
 
     runner = CliRunner()
-    result = runner.invoke(main, ["update", str(project_dir)])
+    result = runner.invoke(main, ["update", str(project_dir)], input="y\n")
 
     assert result.exit_code == 0, result.output
-    assert "Copying from scaffold" in result.output
-    assert (project_dir / "skills" / "sync-jira.md").is_file()
+    assert "updated:" in result.output
+    assert "## Custom Step" not in skill.read_text()
