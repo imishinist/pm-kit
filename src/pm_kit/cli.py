@@ -2,6 +2,7 @@ import click
 
 from pm_kit import __version__
 from pm_kit.create import create
+from pm_kit.sync.cli import sync
 
 
 @click.group()
@@ -12,3 +13,4 @@ def main():
 
 
 main.add_command(create)
+main.add_command(sync)

@@ -2,7 +2,7 @@
 name = "pm-kit"
 version = "0.1.0"
 requires-python = ">=3.11"
-dependencies = ["click", "pyyaml", "jinja2"]
+dependencies = ["click", "pyyaml", "jinja2", "requests"]
 
 [project.scripts]
 pm-kit = "pm_kit.cli:main"
