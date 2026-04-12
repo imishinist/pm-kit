@@ -235,7 +235,7 @@ export CONFLUENCE_API_TOKEN="..."
 
 ## PJ一覧管理
 
-`~/.pm-kit/registry.yaml` で全PJのパスを追跡:
+`$XDG_DATA_HOME/pm-kit/registry.yaml` で全PJのパスを追跡（デフォルト: `~/.local/share/pm-kit/registry.yaml`）:
 
 ```yaml
 projects:

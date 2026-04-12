@@ -1,0 +1,25 @@
+name: "{{ name }}"
+description: "{{ description }}"
+created: "{{ created_date }}"
+
+# jira:
+#   url: "https://company.atlassian.net"
+#   project_key: ""
+#   board_id:
+#   board_type: "scrum"  # "scrum" | "kanban"
+
+# slack:
+#   channels:
+#     - "#proj-channel"
+
+# confluence:
+#   url: "https://company.atlassian.net/wiki"
+#   space_key: ""
+
+# meetings:
+#   source: "google-docs"  # "google-docs" | "manual"
+#   folder_id: ""
+
+# repos:
+#   - name: example-api
+#     url: "git@github.com:company/example-api.git"

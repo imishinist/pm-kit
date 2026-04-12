@@ -1,0 +1,15 @@
+[project]
+name = "pm-kit"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["click", "pyyaml", "jinja2"]
+
+[project.scripts]
+pm-kit = "pm_kit.cli:main"
+
+[tool.uv]
+dev-dependencies = ["pytest"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
