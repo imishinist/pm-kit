@@ -24,11 +24,13 @@ Refer to `project.yaml` for the list of Slack channels to sync (under `slack.cha
 
 ### How to fetch
 
+Read `pm_kit_path` from `project.yaml` and use it as the `--project` argument for `uv run`.
+
 1. If a Slack MCP server is available, use it to fetch channel messages following the rules above
-2. Otherwise, run `uv run pm-kit sync slack` to fetch data as JSON
-   - All messages: `uv run pm-kit sync slack`
-   - Since a specific date: `uv run pm-kit sync slack --since 2026-04-11`
-3. Run `uv run pm-kit schema slack` to see the JSON schema of the sync output
+2. Otherwise, run `uv run --project <pm_kit_path> pm-kit sync slack` to fetch data as JSON
+   - All messages: `uv run --project <pm_kit_path> pm-kit sync slack`
+   - Since a specific date: `uv run --project <pm_kit_path> pm-kit sync slack --since 2026-04-11`
+3. Run `uv run --project <pm_kit_path> pm-kit schema slack` to see the JSON schema of the sync output
 
 ## Data Storage
 

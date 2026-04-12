@@ -1,6 +1,7 @@
 name: "{{ name }}"
 description: "{{ description }}"
 created: "{{ created_date }}"
+pm_kit_path: "{{ pm_kit_path }}"
 
 # jira:
 #   url: "https://company.atlassian.net"

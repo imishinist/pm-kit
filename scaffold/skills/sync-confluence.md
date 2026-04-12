@@ -29,9 +29,11 @@ Refer to `project.yaml` for the Confluence space key (under `confluence.space_ke
 
 ### How to fetch
 
+Read `pm_kit_path` from `project.yaml` and use it as the `--project` argument for `uv run`.
+
 1. If a Confluence MCP server is available, use it to fetch pages following the rules above
-2. Otherwise, run `uv run pm-kit sync confluence` to fetch data as JSON (the script applies these rules internally)
-3. Run `uv run pm-kit schema confluence` to see the JSON schema of the sync output
+2. Otherwise, run `uv run --project <pm_kit_path> pm-kit sync confluence` to fetch data as JSON (the script applies these rules internally)
+3. Run `uv run --project <pm_kit_path> pm-kit schema confluence` to see the JSON schema of the sync output
 
 ## Data Storage
 

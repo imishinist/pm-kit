@@ -77,6 +77,7 @@ def create(name: str, dest_path: str | None) -> None:
         "name": name,
         "description": "",
         "created_date": str(date.today()),
+        "pm_kit_path": str(pm_kit_root),
     }
 
     project_dir.mkdir(parents=True)

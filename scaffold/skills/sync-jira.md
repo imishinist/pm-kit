@@ -26,11 +26,13 @@ Refer to `project.yaml` to determine the Jira project key, board ID, and board t
 
 ### How to fetch
 
+Read `pm_kit_path` from `project.yaml` and use it as the `--project` argument for `uv run`.
+
 1. If a Jira MCP server is available, use it to query tickets and sprints following the rules above
-2. Otherwise, run `uv run pm-kit sync jira` to fetch data as JSON (marks tickets with `active: true/false`)
-   - All tickets: `uv run pm-kit sync jira`
-   - Incremental: `uv run pm-kit sync jira --since 2026-04-06`
-3. Run `uv run pm-kit schema jira` to see the JSON schema of the sync output
+2. Otherwise, run `uv run --project <pm_kit_path> pm-kit sync jira` to fetch data as JSON (marks tickets with `active: true/false`)
+   - All tickets: `uv run --project <pm_kit_path> pm-kit sync jira`
+   - Incremental: `uv run --project <pm_kit_path> pm-kit sync jira --since 2026-04-06`
+3. Run `uv run --project <pm_kit_path> pm-kit schema jira` to see the JSON schema of the sync output
 
 ## Data Storage
 
