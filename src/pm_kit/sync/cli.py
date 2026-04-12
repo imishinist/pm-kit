@@ -8,29 +8,31 @@ from pm_kit.sync.slack import sync_slack as run_sync_slack
 
 @click.group()
 def sync() -> None:
-    """Sync external data sources into the project."""
+    """Fetch external data and output as JSON."""
     pass
 
 
 @sync.command()
-def jira() -> None:
-    """Sync Jira tickets and sprints."""
+@click.option("--since", default=None, help="Fetch tickets updated since this date (YYYY-MM-DD). Omit for all tickets.")
+def jira(since: str | None) -> None:
+    """Fetch Jira tickets and sprints as JSON."""
     project_dir = find_project_dir()
     config = load_project(project_dir)
-    run_sync_jira(project_dir, config)
+    run_sync_jira(config, since=since)
 
 
 @sync.command()
-def slack() -> None:
-    """Sync Slack channel messages."""
+@click.option("--since", default=None, help="Fetch messages since this date (YYYY-MM-DD). Omit for all messages.")
+def slack(since: str | None) -> None:
+    """Fetch Slack channel messages as JSON."""
     project_dir = find_project_dir()
     config = load_project(project_dir)
-    run_sync_slack(project_dir, config)
+    run_sync_slack(config, since=since)
 
 
 @sync.command()
 def confluence() -> None:
-    """Sync Confluence pages."""
+    """Fetch Confluence pages as JSON."""
     project_dir = find_project_dir()
     config = load_project(project_dir)
-    run_sync_confluence(project_dir, config)
+    run_sync_confluence(config)

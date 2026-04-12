@@ -1,9 +1,9 @@
-"""Slack sync: fetch channel messages into data/slack/."""
+"""Slack sync: fetch channel messages as raw JSON."""
 
 import json
 import os
+import sys
 from datetime import datetime
-from pathlib import Path
 from typing import Any
 
 import click
@@ -34,9 +34,9 @@ def _api(method: str, token: str, params: dict[str, Any] | None = None) -> dict[
 def _resolve_channel_id(channel_name: str, token: str) -> str:
     """Resolve a channel name (e.g. #proj-foo) to a channel ID."""
     name = channel_name.lstrip("#")
-    cursor = None
+    cursor: str | None = None
     while True:
-        params = {"types": "public_channel,private_channel", "limit": 200}
+        params: dict[str, Any] = {"types": "public_channel,private_channel", "limit": 200}
         if cursor:
             params["cursor"] = cursor
         data = _api("conversations.list", token, params)
@@ -75,9 +75,6 @@ def _fetch_replies(channel_id: str, thread_ts: str, token: str) -> list[dict[str
     return replies[1:] if len(replies) > 1 else []
 
 
-def _ts_to_date(ts: str) -> str:
-    return datetime.fromtimestamp(float(ts)).strftime("%Y-%m-%d")
-
 
 def _message_to_record(msg: dict[str, Any], replies: list[dict[str, Any]]) -> dict[str, Any]:
     return {
@@ -92,60 +89,59 @@ def _message_to_record(msg: dict[str, Any], replies: list[dict[str, Any]]) -> di
     }
 
 
-def sync_slack(project_dir: Path, config: dict[str, Any]) -> None:
-    """Sync Slack channels into project_dir/data/slack/."""
+def fetch_slack(config: dict[str, Any], since: str | None = None) -> dict[str, Any]:
+    """Fetch Slack data and return as a dict.
+
+    Args:
+        config: project.yaml config dict.
+        since: fetch messages since this date (YYYY-MM-DD). None for all messages.
+    """
     slack_config = config.get("slack")
     if not slack_config:
         raise click.ClickException("slack section not configured in project.yaml")
 
-    channels = slack_config.get("channels", [])
-    if not channels:
+    channels_list = slack_config.get("channels", [])
+    if not channels_list:
         raise click.ClickException("No Slack channels configured")
 
     token = _token()
-    raw_dir = project_dir / "data" / "slack" / "raw"
-    raw_dir.mkdir(parents=True, exist_ok=True)
 
-    for channel_name in channels:
+    # Convert since date to Slack oldest timestamp
+    oldest: str | None = None
+    if since:
+        oldest = str(datetime.strptime(since, "%Y-%m-%d").timestamp())
+
+    channels: list[dict[str, Any]] = []
+    for channel_name in channels_list:
         name = channel_name.lstrip("#")
-        click.echo(f"Syncing Slack channel: {channel_name}")
-
         channel_id = _resolve_channel_id(channel_name, token)
-        channel_dir = raw_dir / name
-        channel_dir.mkdir(parents=True, exist_ok=True)
 
-        # Determine oldest timestamp for incremental sync
-        oldest = None
-        existing_files = sorted(channel_dir.glob("*.jsonl"))
-        if existing_files:
-            # Fetch from the start of the latest existing date
-            latest_date = existing_files[-1].stem
-            oldest = str(datetime.strptime(latest_date, "%Y-%m-%d").timestamp())
+        messages = _fetch_messages(channel_id, token, oldest=oldest)
 
-        messages = _fetch_messages(channel_id, token, oldest)
-        click.echo(f"  {len(messages)} messages fetched")
-
-        # Group messages by date
-        by_date: dict[str, list[dict[str, Any]]] = {}
-        for msg in messages:
+        records: list[dict[str, Any]] = []
+        for msg in sorted(messages, key=lambda m: float(m.get("ts", "0"))):
             if msg.get("subtype") in ("channel_join", "channel_leave"):
                 continue
-            msg_date = _ts_to_date(msg["ts"])
-            by_date.setdefault(msg_date, []).append(msg)
+            replies: list[dict[str, Any]] = []
+            if msg.get("reply_count", 0) > 0:
+                replies = _fetch_replies(channel_id, msg["ts"], token)
+            records.append(_message_to_record(msg, replies))
 
-        for msg_date, day_msgs in sorted(by_date.items()):
-            records: list[dict[str, Any]] = []
-            for msg in sorted(day_msgs, key=lambda m: float(m["ts"])):
-                replies: list[dict[str, Any]] = []
-                if msg.get("reply_count", 0) > 0:
-                    replies = _fetch_replies(channel_id, msg["ts"], token)
-                records.append(_message_to_record(msg, replies))
+        channels.append({
+            "channel": name,
+            "channel_id": channel_id,
+            "message_count": len(records),
+            "messages": records,
+        })
 
-            outfile = channel_dir / f"{msg_date}.jsonl"
-            with outfile.open("w") as f:
-                for rec in records:
-                    f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    return {
+        "fetched_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "channels": channels,
+    }
 
-        click.echo(f"  Written to {channel_dir}")
 
-    click.echo("Slack sync complete")
+def sync_slack(config: dict[str, Any], since: str | None = None) -> None:
+    """Fetch Slack data and output as JSON to stdout."""
+    result = fetch_slack(config, since=since)
+    json.dump(result, sys.stdout, ensure_ascii=False, indent=2)
+    sys.stdout.write("\n")

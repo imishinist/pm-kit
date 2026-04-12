@@ -1,89 +1,10 @@
 from click.testing import CliRunner
 
 from pm_kit.cli import main
-from pm_kit.sync.jira import _render_ticket_md, _render_comments_md, _ticket_frontmatter
-from pm_kit.sync.slack import _message_to_record, _ts_to_date
-from pm_kit.sync.confluence import (
-    _slugify,
-    _build_breadcrumb,
-    _build_meta,
-    _render_page_md,
-)
+from pm_kit.sync.slack import _message_to_record
 
 
-class TestJiraRendering:
-    def _make_issue(
-        self,
-        key="TEST-1",
-        summary="Fix bug",
-        status="In Progress",
-        description="Details here",
-    ):
-        return {
-            "key": key,
-            "fields": {
-                "summary": summary,
-                "status": {"name": status},
-                "assignee": {"displayName": "Alice"},
-                "priority": {"name": "High"},
-                "issuetype": {"name": "Bug"},
-                "created": "2026-04-01T10:00:00.000+0900",
-                "updated": "2026-04-12T10:00:00.000+0900",
-                "description": description,
-            },
-        }
-
-    def test_ticket_frontmatter(self):
-        issue = self._make_issue()
-        fm = _ticket_frontmatter(issue)
-        assert fm["key"] == "TEST-1"
-        assert fm["summary"] == "Fix bug"
-        assert fm["status"] == "In Progress"
-        assert fm["assignee"] == "Alice"
-
-    def test_render_ticket_md_frontmatter_only(self):
-        issue = self._make_issue()
-        md = _render_ticket_md(issue, detail=False)
-        assert "---" in md
-        assert '"TEST-1"' in md
-        assert "Details here" not in md
-
-    def test_render_ticket_md_with_detail(self):
-        issue = self._make_issue()
-        md = _render_ticket_md(issue, detail=True)
-        assert "# TEST-1: Fix bug" in md
-        assert "Details here" in md
-
-    def test_render_comments_md(self):
-        comments = [
-            {
-                "author": {"displayName": "Bob"},
-                "created": "2026-04-12",
-                "body": "Looks good",
-            },
-            {
-                "author": {"displayName": "Carol"},
-                "created": "2026-04-13",
-                "body": "Approved",
-            },
-        ]
-        md = _render_comments_md(comments)
-        assert "## Bob" in md
-        assert "Looks good" in md
-        assert "## Carol" in md
-
-    def test_render_comments_md_empty(self):
-        md = _render_comments_md([])
-        assert "# Comments" in md
-
-
-class TestSlackRendering:
-    def test_ts_to_date(self):
-        # 2026-04-12 00:00:00 UTC
-        assert _ts_to_date("1776124800.000000")  # just check it returns a date string
-        result = _ts_to_date("0")
-        assert len(result) == 10  # YYYY-MM-DD
-
+class TestSlackHelpers:
     def test_message_to_record_simple(self):
         msg = {"ts": "100", "user": "U01", "text": "hello"}
         rec = _message_to_record(msg, [])
@@ -111,51 +32,147 @@ class TestSlackRendering:
         assert rec["replies"][0]["text"] == "answer1"
 
 
-class TestConfluenceRendering:
-    def test_slugify(self):
-        assert _slugify("Architecture Overview") == "architecture-overview"
-        assert _slugify("FAQ & Tips!") == "faq-tips"
+class TestJiraExtract:
+    def test_extract_issue_inactive(self):
+        from pm_kit.sync.jira import _extract_issue
 
-    def test_build_breadcrumb(self):
-        page = {
-            "title": "Child Page",
-            "ancestors": [{"title": "Root"}, {"title": "Parent"}],
+        issue = {
+            "key": "TEST-1",
+            "fields": {
+                "summary": "Fix bug",
+                "status": {"name": "In Progress"},
+                "assignee": {"displayName": "Alice"},
+                "priority": {"name": "High"},
+                "issuetype": {"name": "Bug"},
+                "created": "2026-04-01T10:00:00.000+0900",
+                "updated": "2026-04-12T10:00:00.000+0900",
+                "description": "Details here",
+            },
         }
-        assert _build_breadcrumb(page) == "Root > Parent > Child Page"
+        result = _extract_issue(issue, active=False)
+        assert result["key"] == "TEST-1"
+        assert result["summary"] == "Fix bug"
+        assert result["active"] is False
+        assert result["epic_key"] == ""
+        assert result["epic_name"] == ""
+        assert "description" not in result
 
-    def test_build_breadcrumb_no_ancestors(self):
-        page = {"title": "Top Page", "ancestors": []}
-        assert _build_breadcrumb(page) == "Top Page"
+    def test_extract_issue_active(self):
+        from pm_kit.sync.jira import _extract_issue
 
-    def test_build_meta(self):
+        issue = {
+            "key": "TEST-1",
+            "fields": {
+                "summary": "Fix bug",
+                "status": {"name": "In Progress"},
+                "assignee": {"displayName": "Alice"},
+                "priority": {"name": "High"},
+                "issuetype": {"name": "Bug"},
+                "created": "2026-04-01T10:00:00.000+0900",
+                "updated": "2026-04-12T10:00:00.000+0900",
+                "description": "Details here",
+            },
+        }
+        result = _extract_issue(issue, active=True)
+        assert result["key"] == "TEST-1"
+        assert result["active"] is True
+        assert result["description"] == "Details here"
+
+    def test_extract_issue_with_epic(self):
+        from pm_kit.sync.jira import _extract_issue
+
+        issue = {
+            "key": "TEST-1",
+            "fields": {
+                "summary": "Fix bug",
+                "status": {"name": "In Progress"},
+                "assignee": {"displayName": "Alice"},
+                "priority": {"name": "High"},
+                "issuetype": {"name": "Bug"},
+                "created": "2026-04-01T10:00:00.000+0900",
+                "updated": "2026-04-12T10:00:00.000+0900",
+                "epic": {"key": "TEST-10", "name": "Auth Overhaul"},
+            },
+        }
+        result = _extract_issue(issue, active=False)
+        assert result["epic_key"] == "TEST-10"
+        assert result["epic_name"] == "Auth Overhaul"
+
+    def test_extract_issue_with_parent_epic(self):
+        from pm_kit.sync.jira import _extract_issue
+
+        issue = {
+            "key": "TEST-1",
+            "fields": {
+                "summary": "Fix bug",
+                "status": {"name": "In Progress"},
+                "assignee": {},
+                "priority": {"name": "Medium"},
+                "issuetype": {"name": "Task"},
+                "created": "2026-04-01",
+                "updated": "2026-04-12",
+                "parent": {
+                    "key": "TEST-5",
+                    "fields": {
+                        "summary": "Platform Migration",
+                        "issuetype": {"name": "Epic"},
+                    },
+                },
+            },
+        }
+        result = _extract_issue(issue, active=False)
+        assert result["epic_key"] == "TEST-5"
+        assert result["epic_name"] == "Platform Migration"
+
+
+class TestConfluenceExtract:
+    def test_extract_page(self):
+        from pm_kit.sync.confluence import _extract_page
+
         page = {
             "id": "123",
             "title": "My Page",
             "ancestors": [{"id": "100", "title": "Parent"}],
-            "children": {"page": {"results": [{"id": "200"}, {"id": "201"}]}},
+            "children": {"page": {"results": [{"id": "200", "title": "Child"}]}},
             "metadata": {"labels": {"results": [{"name": "important"}]}},
             "version": {
                 "by": {"displayName": "Alice"},
                 "when": "2026-04-12",
                 "number": 3,
             },
-        }
-        meta = _build_meta(page)
-        assert meta["id"] == "123"
-        assert meta["parent"] == "100"
-        assert meta["children"] == ["200", "201"]
-        assert meta["labels"] == ["important"]
-        assert meta["version"] == 3
-
-    def test_render_page_md(self):
-        page = {
-            "title": "Test Page",
-            "ancestors": [],
             "body": {"storage": {"value": "<p>Hello world</p>"}},
         }
-        md = _render_page_md(page)
-        assert "# Test Page" in md
-        assert "<p>Hello world</p>" in md
+        result = _extract_page(page, [])
+        assert result["id"] == "123"
+        assert result["title"] == "My Page"
+        assert result["body_html"] == "<p>Hello world</p>"
+        assert result["ancestors"] == [{"id": "100", "title": "Parent"}]
+        assert result["children"] == [{"id": "200", "title": "Child"}]
+        assert result["labels"] == ["important"]
+        assert result["version"] == 3
+        assert result["attachments"] == []
+
+    def test_extract_page_with_attachments(self):
+        from pm_kit.sync.confluence import _extract_page
+
+        page = {
+            "id": "123",
+            "title": "Page",
+            "ancestors": [],
+            "children": {"page": {"results": []}},
+            "metadata": {"labels": {"results": []}},
+            "version": {"by": {}, "when": "", "number": 1},
+            "body": {"storage": {"value": ""}},
+        }
+        attachments = [
+            {
+                "title": "diagram.png",
+                "_links": {"download": "/download/123/diagram.png"},
+            },
+        ]
+        result = _extract_page(page, attachments)
+        assert len(result["attachments"]) == 1
+        assert result["attachments"][0]["title"] == "diagram.png"
 
 
 class TestSyncCLI:

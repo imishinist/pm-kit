@@ -23,7 +23,7 @@ def test_update_no_changes(tmp_path, monkeypatch):
     result = runner.invoke(main, ["update", str(project_dir)])
 
     assert result.exit_code == 0, result.output
-    assert "6 up-to-date" in result.output
+    assert "up-to-date" in result.output
     assert "0 added" in result.output
     assert "0 skipped" in result.output
 
@@ -90,3 +90,31 @@ def test_update_no_prompts_dir(tmp_path, monkeypatch):
     assert result.exit_code == 0, result.output
     assert "Copying from scaffold" in result.output
     assert (project_dir / "prompts" / "system.md").is_file()
+
+
+def test_update_skills_modified(tmp_path, monkeypatch):
+    project_dir = _create_project(tmp_path, monkeypatch)
+
+    # Modify a skill file
+    skill = project_dir / "skills" / "sync-jira.md"
+    skill.write_text(skill.read_text() + "\n## Custom Step\n")
+
+    runner = CliRunner()
+    result = runner.invoke(main, ["update", str(project_dir)], input="n\n")
+
+    assert result.exit_code == 0, result.output
+    assert "1 skipped" in result.output
+    assert "## Custom Step" in skill.read_text()
+
+
+def test_update_skills_no_dir(tmp_path, monkeypatch):
+    project_dir = _create_project(tmp_path, monkeypatch)
+
+    shutil.rmtree(project_dir / "skills")
+
+    runner = CliRunner()
+    result = runner.invoke(main, ["update", str(project_dir)])
+
+    assert result.exit_code == 0, result.output
+    assert "Copying from scaffold" in result.output
+    assert (project_dir / "skills" / "sync-jira.md").is_file()

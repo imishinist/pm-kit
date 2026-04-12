@@ -5,6 +5,7 @@ from pm_kit.adapter.cli import adapter
 from pm_kit.create import create
 from pm_kit.daily import daily
 from pm_kit.overview import overview
+from pm_kit.schema import schema
 from pm_kit.sync.cli import sync
 from pm_kit.update import update
 
@@ -20,5 +21,6 @@ main.add_command(adapter)
 main.add_command(create)
 main.add_command(daily)
 main.add_command(overview)
+main.add_command(schema)
 main.add_command(sync)
 main.add_command(update)

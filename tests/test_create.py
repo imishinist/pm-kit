@@ -29,6 +29,13 @@ def test_create_generates_directory_structure(tmp_path, monkeypatch):
     assert (project_dir / "prompts" / "sync-slack.md").is_file()
     assert (project_dir / "prompts" / "sync-confluence.md").is_file()
 
+    # Copied skills
+    assert (project_dir / "skills" / "sync-jira.md").is_file()
+    assert (project_dir / "skills" / "sync-slack.md").is_file()
+    assert (project_dir / "skills" / "sync-confluence.md").is_file()
+    assert (project_dir / "skills" / "daily-check.md").is_file()
+    assert (project_dir / "skills" / "overview.md").is_file()
+
     # Empty directories
     assert (project_dir / "data" / "jira").is_dir()
     assert (project_dir / "data" / "slack").is_dir()
@@ -38,7 +45,8 @@ def test_create_generates_directory_structure(tmp_path, monkeypatch):
 
     # Symlinks
     assert (project_dir / "knowledge").is_symlink()
-    assert (project_dir / "scripts").is_symlink()
+    # scripts symlink should no longer exist
+    assert not (project_dir / "scripts").exists()
 
 
 def test_create_renders_project_yaml_with_name(tmp_path, monkeypatch):
@@ -75,9 +83,6 @@ def test_create_symlinks_point_to_pm_kit_repo(tmp_path, monkeypatch):
     knowledge_target = (project_dir / "knowledge").resolve()
     assert knowledge_target.name == "knowledge"
     assert (knowledge_target / "risk-management.md").is_file()
-
-    scripts_target = (project_dir / "scripts").resolve()
-    assert scripts_target.name == "sync"
 
 
 def test_create_registers_in_registry(tmp_path, monkeypatch):
