@@ -1,6 +1,7 @@
 """Generate Claude Code configuration files for a project."""
 
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -11,8 +12,10 @@ def generate_claude_config(project_dir: Path) -> list[str]:
     Returns a list of file paths that were created/updated.
     """
     config_path = project_dir / "project.yaml"
-    config = yaml.safe_load(config_path.read_text()) if config_path.exists() else {}
-    project_name = config.get("name", "project")
+    config: dict[str, Any] = (
+        yaml.safe_load(config_path.read_text()) if config_path.exists() else {}
+    )
+    project_name: str = config.get("name", "project")
 
     created: list[str] = []
 
@@ -33,7 +36,9 @@ def generate_claude_config(project_dir: Path) -> list[str]:
     return created
 
 
-def _build_claude_md(project_dir: Path, config: dict, project_name: str) -> str:
+def _build_claude_md(
+    project_dir: Path, _config: dict[str, Any], project_name: str
+) -> str:
     lines = [
         f"# {project_name}",
         "",
@@ -76,47 +81,53 @@ def _build_claude_md(project_dir: Path, config: dict, project_name: str) -> str:
     return "\n".join(lines)
 
 
-def _build_skills(config: dict) -> dict[str, str]:
-    skills = {}
+def _build_skills(_config: dict[str, Any]) -> dict[str, str]:
+    skills: dict[str, str] = {}
 
-    skills["daily-check.md"] = "\n".join([
-        "---",
-        "name: daily-check",
-        "description: Run daily check and analyze project status",
-        "---",
-        "",
-        "1. Run `pm-kit sync jira` to sync Jira (if configured)",
-        "2. Run `pm-kit sync slack` to sync Slack (if configured)",
-        "3. Run `pm-kit daily` to gather analysis context",
-        "4. Analyze and report based on the output, following `prompts/daily-check.md`",
-        "",
-    ])
+    skills["daily-check.md"] = "\n".join(
+        [
+            "---",
+            "name: daily-check",
+            "description: Run daily check and analyze project status",
+            "---",
+            "",
+            "1. Run `pm-kit sync jira` to sync Jira (if configured)",
+            "2. Run `pm-kit sync slack` to sync Slack (if configured)",
+            "3. Run `pm-kit daily` to gather analysis context",
+            "4. Analyze and report based on the output, following `prompts/daily-check.md`",
+            "",
+        ]
+    )
 
-    skills["sync-all.md"] = "\n".join([
-        "---",
-        "name: sync-all",
-        "description: Sync all configured data sources",
-        "---",
-        "",
-        "Run the following in order:",
-        "",
-        "1. `pm-kit sync jira` (if jira is configured)",
-        "2. `pm-kit sync slack` (if slack is configured)",
-        "3. `pm-kit sync confluence` (if confluence is configured)",
-        "",
-    ])
+    skills["sync-all.md"] = "\n".join(
+        [
+            "---",
+            "name: sync-all",
+            "description: Sync all configured data sources",
+            "---",
+            "",
+            "Run the following in order:",
+            "",
+            "1. `pm-kit sync jira` (if jira is configured)",
+            "2. `pm-kit sync slack` (if slack is configured)",
+            "3. `pm-kit sync confluence` (if confluence is configured)",
+            "",
+        ]
+    )
 
-    skills["risk-review.md"] = "\n".join([
-        "---",
-        "name: risk-review",
-        "description: Run a risk review",
-        "---",
-        "",
-        "1. Read `risks/risk-register.md`",
-        "2. Analyze risks following `prompts/risk-review.md`",
-        "3. Detect new risk indicators from synced data",
-        "4. Propose updates to risk-register.md",
-        "",
-    ])
+    skills["risk-review.md"] = "\n".join(
+        [
+            "---",
+            "name: risk-review",
+            "description: Run a risk review",
+            "---",
+            "",
+            "1. Read `risks/risk-register.md`",
+            "2. Analyze risks following `prompts/risk-review.md`",
+            "3. Detect new risk indicators from synced data",
+            "4. Propose updates to risk-register.md",
+            "",
+        ]
+    )
 
     return skills

@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from click.testing import CliRunner
 
 from pm_kit.adapter.claude import generate_claude_config
@@ -8,7 +6,9 @@ from pm_kit.cli import main
 
 
 def _setup_project(tmp_path, monkeypatch):
-    (tmp_path / "project.yaml").write_text('name: "billing"\ndescription: "Billing system"\n')
+    (tmp_path / "project.yaml").write_text(
+        'name: "billing"\ndescription: "Billing system"\n'
+    )
     prompts_dir = tmp_path / "prompts"
     prompts_dir.mkdir()
     (prompts_dir / "system.md").write_text("# System\n")
@@ -40,7 +40,9 @@ class TestClaudeAdapter:
         assert ".claude/skills/sync-all.md" in created
         assert ".claude/skills/risk-review.md" in created
 
-        daily_skill = (project_dir / ".claude" / "skills" / "daily-check.md").read_text()
+        daily_skill = (
+            project_dir / ".claude" / "skills" / "daily-check.md"
+        ).read_text()
         assert "pm-kit daily" in daily_skill
 
     def test_claude_cli(self, tmp_path, monkeypatch):

@@ -25,14 +25,15 @@ Always communicate with the user in Japanese unless they specify otherwise.
 ## Commands
 
 ```bash
-uv sync                         # Install dependencies
 uv run pm-kit create <name>     # Create project
+uv run pm-kit update <path>     # Update project prompts from scaffold
 uv run pm-kit sync {jira,slack,confluence}  # Sync data
 uv run pm-kit daily             # Daily check
 uv run pm-kit adapter {claude,kiro}  # Generate adapter configs
 uv run pm-kit overview          # Cross-project overview
-uv run pytest -v                # Run tests
 ```
+
+For build, test, lint, and type check commands, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Development policy
 

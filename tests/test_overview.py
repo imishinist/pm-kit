@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import yaml
 from click.testing import CliRunner
 
@@ -24,7 +22,9 @@ class TestBuildOverview:
 
         project_dir = tmp_path / "my-project"
         project_dir.mkdir()
-        (project_dir / "project.yaml").write_text('name: "my-project"\ndescription: "Test"\n')
+        (project_dir / "project.yaml").write_text(
+            'name: "my-project"\ndescription: "Test"\n'
+        )
 
         _write_registry(
             xdg / "pm-kit" / "registry.yaml",
@@ -42,7 +42,13 @@ class TestBuildOverview:
 
         _write_registry(
             xdg / "pm-kit" / "registry.yaml",
-            [{"name": "gone", "path": str(tmp_path / "nonexistent"), "created": "2026-04-12"}],
+            [
+                {
+                    "name": "gone",
+                    "path": str(tmp_path / "nonexistent"),
+                    "created": "2026-04-12",
+                }
+            ],
         )
 
         output = build_overview()

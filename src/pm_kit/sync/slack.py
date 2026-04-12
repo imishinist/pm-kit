@@ -2,8 +2,9 @@
 
 import json
 import os
-from datetime import date, datetime
+from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import click
 import requests
@@ -16,7 +17,7 @@ def _token() -> str:
     return token
 
 
-def _api(method: str, token: str, params: dict | None = None) -> dict:
+def _api(method: str, token: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
     resp = requests.get(
         f"https://slack.com/api/{method}",
         headers={"Authorization": f"Bearer {token}"},
@@ -48,12 +49,12 @@ def _resolve_channel_id(channel_name: str, token: str) -> str:
     raise click.ClickException(f"Channel not found: {channel_name}")
 
 
-def _fetch_messages(channel_id: str, token: str, oldest: str | None = None) -> list[dict]:
+def _fetch_messages(channel_id: str, token: str, oldest: str | None = None) -> list[dict[str, Any]]:
     """Fetch messages from a channel, optionally since a timestamp."""
-    messages: list[dict] = []
-    cursor = None
+    messages: list[dict[str, Any]] = []
+    cursor: str | None = None
     while True:
-        params: dict = {"channel": channel_id, "limit": 200}
+        params: dict[str, Any] = {"channel": channel_id, "limit": 200}
         if oldest:
             params["oldest"] = oldest
         if cursor:
@@ -66,7 +67,7 @@ def _fetch_messages(channel_id: str, token: str, oldest: str | None = None) -> l
     return messages
 
 
-def _fetch_replies(channel_id: str, thread_ts: str, token: str) -> list[dict]:
+def _fetch_replies(channel_id: str, thread_ts: str, token: str) -> list[dict[str, Any]]:
     """Fetch thread replies."""
     data = _api("conversations.replies", token, {"channel": channel_id, "ts": thread_ts})
     replies = data.get("messages", [])
@@ -78,7 +79,7 @@ def _ts_to_date(ts: str) -> str:
     return datetime.fromtimestamp(float(ts)).strftime("%Y-%m-%d")
 
 
-def _message_to_record(msg: dict, replies: list[dict]) -> dict:
+def _message_to_record(msg: dict[str, Any], replies: list[dict[str, Any]]) -> dict[str, Any]:
     return {
         "ts": msg.get("ts", ""),
         "user": msg.get("user", ""),
@@ -91,7 +92,7 @@ def _message_to_record(msg: dict, replies: list[dict]) -> dict:
     }
 
 
-def sync_slack(project_dir: Path, config: dict) -> None:
+def sync_slack(project_dir: Path, config: dict[str, Any]) -> None:
     """Sync Slack channels into project_dir/data/slack/."""
     slack_config = config.get("slack")
     if not slack_config:
@@ -125,7 +126,7 @@ def sync_slack(project_dir: Path, config: dict) -> None:
         click.echo(f"  {len(messages)} messages fetched")
 
         # Group messages by date
-        by_date: dict[str, list[dict]] = {}
+        by_date: dict[str, list[dict[str, Any]]] = {}
         for msg in messages:
             if msg.get("subtype") in ("channel_join", "channel_leave"):
                 continue
@@ -133,9 +134,9 @@ def sync_slack(project_dir: Path, config: dict) -> None:
             by_date.setdefault(msg_date, []).append(msg)
 
         for msg_date, day_msgs in sorted(by_date.items()):
-            records = []
+            records: list[dict[str, Any]] = []
             for msg in sorted(day_msgs, key=lambda m: float(m["ts"])):
-                replies = []
+                replies: list[dict[str, Any]] = []
                 if msg.get("reply_count", 0) > 0:
                     replies = _fetch_replies(channel_id, msg["ts"], token)
                 records.append(_message_to_record(msg, replies))

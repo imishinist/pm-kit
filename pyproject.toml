@@ -8,7 +8,11 @@ dependencies = ["click", "pyyaml", "jinja2", "requests"]
 pm-kit = "pm_kit.cli:main"
 
 [tool.uv]
-dev-dependencies = ["pytest"]
+dev-dependencies = [
+    "basedpyright>=1.39.0",
+    "pytest",
+    "ruff>=0.15.10",
+]
 
 [build-system]
 requires = ["hatchling"]

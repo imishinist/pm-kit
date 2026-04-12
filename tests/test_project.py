@@ -1,12 +1,12 @@
-from pathlib import Path
-
 from pm_kit.project import find_project_dir, load_project
 
 import pytest
 
 
 def test_load_project(tmp_path):
-    (tmp_path / "project.yaml").write_text('name: "test"\ndescription: "a test project"\n')
+    (tmp_path / "project.yaml").write_text(
+        'name: "test"\ndescription: "a test project"\n'
+    )
     config = load_project(tmp_path)
     assert config["name"] == "test"
     assert config["description"] == "a test project"

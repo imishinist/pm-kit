@@ -3,6 +3,7 @@
 import os
 import re
 from pathlib import Path
+from typing import Any
 
 import click
 import requests
@@ -17,7 +18,7 @@ def _auth() -> tuple[str, str]:
     return user, token
 
 
-def _get(url: str, auth: tuple[str, str], params: dict | None = None) -> dict:
+def _get(url: str, auth: tuple[str, str], params: dict[str, Any] | None = None) -> dict[str, Any]:
     resp = requests.get(url, auth=auth, params=params or {}, timeout=30)
     resp.raise_for_status()
     return resp.json()
@@ -36,8 +37,8 @@ def _slugify(title: str) -> str:
     return re.sub(r"[\s_]+", "-", slug).strip("-")
 
 
-def _fetch_all_pages(base_url: str, space_key: str, auth: tuple[str, str]) -> list[dict]:
-    pages: list[dict] = []
+def _fetch_all_pages(base_url: str, space_key: str, auth: tuple[str, str]) -> list[dict[str, Any]]:
+    pages: list[dict[str, Any]] = []
     start = 0
     limit = 25
 
@@ -61,7 +62,7 @@ def _fetch_all_pages(base_url: str, space_key: str, auth: tuple[str, str]) -> li
     return pages
 
 
-def _fetch_attachments(base_url: str, page_id: str, auth: tuple[str, str]) -> list[dict]:
+def _fetch_attachments(base_url: str, page_id: str, auth: tuple[str, str]) -> list[dict[str, Any]]:
     data = _get(
         f"{base_url}/rest/api/content/{page_id}/child/attachment",
         auth,
@@ -70,14 +71,14 @@ def _fetch_attachments(base_url: str, page_id: str, auth: tuple[str, str]) -> li
     return data.get("results", [])
 
 
-def _build_breadcrumb(page: dict) -> str:
+def _build_breadcrumb(page: dict[str, Any]) -> str:
     ancestors = page.get("ancestors", [])
     parts = [a["title"] for a in ancestors]
     parts.append(page["title"])
     return " > ".join(parts)
 
 
-def _render_page_md(page: dict) -> str:
+def _render_page_md(page: dict[str, Any]) -> str:
     breadcrumb = _build_breadcrumb(page)
     body_html = page.get("body", {}).get("storage", {}).get("value", "")
     # Store raw HTML — converting to markdown is a separate concern
@@ -91,7 +92,7 @@ def _render_page_md(page: dict) -> str:
     return "\n".join(lines)
 
 
-def _build_meta(page: dict) -> dict:
+def _build_meta(page: dict[str, Any]) -> dict[str, Any]:
     ancestors = page.get("ancestors", [])
     children = page.get("children", {}).get("page", {}).get("results", [])
     labels = page.get("metadata", {}).get("labels", {}).get("results", [])
@@ -109,7 +110,7 @@ def _build_meta(page: dict) -> dict:
     }
 
 
-def sync_confluence(project_dir: Path, config: dict) -> None:
+def sync_confluence(project_dir: Path, config: dict[str, Any]) -> None:
     """Sync Confluence space into project_dir/data/confluence/."""
     conf_config = config.get("confluence")
     if not conf_config:
@@ -130,7 +131,7 @@ def sync_confluence(project_dir: Path, config: dict) -> None:
     pages = _fetch_all_pages(base_url, space_key, auth)
     click.echo(f"  {len(pages)} pages fetched")
 
-    index_entries = []
+    index_entries: list[str] = []
 
     for page in pages:
         page_id = page["id"]

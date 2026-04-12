@@ -4,10 +4,10 @@ import json
 import os
 from datetime import date, timedelta
 from pathlib import Path
+from typing import Any
 
 import click
 import requests
-import yaml
 
 
 def _auth() -> tuple[str, str]:
@@ -18,27 +18,31 @@ def _auth() -> tuple[str, str]:
     return user, token
 
 
-def _get(url: str, auth: tuple[str, str], params: dict | None = None) -> dict:
+def _get(url: str, auth: tuple[str, str], params: dict[str, Any] | None = None) -> dict[str, Any]:
     resp = requests.get(url, auth=auth, params=params or {}, timeout=30)
     resp.raise_for_status()
     return resp.json()
 
 
-def _ticket_frontmatter(issue: dict) -> dict:
-    fields = issue["fields"]
+def _ticket_frontmatter(issue: dict[str, Any]) -> dict[str, str]:
+    fields: dict[str, Any] = issue["fields"]
+    status: dict[str, Any] = fields.get("status") or {}
+    assignee: dict[str, Any] = fields.get("assignee") or {}
+    priority: dict[str, Any] = fields.get("priority") or {}
+    issue_type: dict[str, Any] = fields.get("issuetype") or {}
     return {
         "key": issue["key"],
         "summary": fields.get("summary", ""),
-        "status": fields.get("status", {}).get("name", ""),
-        "assignee": (fields.get("assignee") or {}).get("displayName", ""),
-        "priority": (fields.get("priority") or {}).get("name", ""),
-        "issue_type": (fields.get("issuetype") or {}).get("name", ""),
+        "status": status.get("name", ""),
+        "assignee": assignee.get("displayName", ""),
+        "priority": priority.get("name", ""),
+        "issue_type": issue_type.get("name", ""),
         "created": fields.get("created", ""),
         "updated": fields.get("updated", ""),
     }
 
 
-def _render_ticket_md(issue: dict, detail: bool) -> str:
+def _render_ticket_md(issue: dict[str, Any], detail: bool) -> str:
     fm = _ticket_frontmatter(issue)
     lines = ["---"]
     lines += [f"{k}: {json.dumps(v, ensure_ascii=False)}" for k, v in fm.items()]
@@ -55,7 +59,7 @@ def _render_ticket_md(issue: dict, detail: bool) -> str:
     return "\n".join(lines)
 
 
-def _render_comments_md(comments: list[dict]) -> str:
+def _render_comments_md(comments: list[dict[str, Any]]) -> str:
     lines = ["# Comments", ""]
     for c in comments:
         author = c.get("author", {}).get("displayName", "unknown")
@@ -68,13 +72,13 @@ def _render_comments_md(comments: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def _fetch_all_issues(base_url: str, project_key: str, auth: tuple[str, str], updated_since: str | None = None) -> list[dict]:
+def _fetch_all_issues(base_url: str, project_key: str, auth: tuple[str, str], updated_since: str | None = None) -> list[dict[str, Any]]:
     jql = f"project = {project_key}"
     if updated_since:
         jql += f' AND updated >= "{updated_since}"'
     jql += " ORDER BY updated DESC"
 
-    issues: list[dict] = []
+    issues: list[dict[str, Any]] = []
     start_at = 0
     max_results = 50
 
@@ -92,7 +96,7 @@ def _fetch_all_issues(base_url: str, project_key: str, auth: tuple[str, str], up
     return issues
 
 
-def _fetch_comments(base_url: str, issue_key: str, auth: tuple[str, str]) -> list[dict]:
+def _fetch_comments(base_url: str, issue_key: str, auth: tuple[str, str]) -> list[dict[str, Any]]:
     data = _get(f"{base_url}/rest/api/2/issue/{issue_key}/comment", auth)
     return data.get("comments", [])
 
@@ -124,9 +128,10 @@ def _get_kanban_active_issue_keys(base_url: str, board_id: int, auth: tuple[str,
         auth,
         {"maxResults": 200},
     )
-    keys = set()
+    keys: set[str] = set()
     for issue in data.get("issues", []):
-        status_cat = issue["fields"].get("status", {}).get("statusCategory", {}).get("key", "")
+        fields: dict[str, Any] = issue["fields"]
+        status_cat: str = fields.get("status", {}).get("statusCategory", {}).get("key", "")
         # Skip 'new' (TODO/Backlog) — include in-progress and others except done
         if status_cat not in ("new", "done"):
             keys.add(issue["key"])
@@ -159,7 +164,7 @@ def _write_sprint_info(base_url: str, board_id: int, auth: tuple[str, str], jira
     (sprints_dir / "current.md").write_text("\n".join(lines))
 
 
-def sync_jira(project_dir: Path, config: dict) -> None:
+def sync_jira(project_dir: Path, config: dict[str, Any]) -> None:
     """Sync Jira data into project_dir/data/jira/."""
     jira_config = config.get("jira")
     if not jira_config:

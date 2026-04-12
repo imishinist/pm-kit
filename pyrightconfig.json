@@ -2,5 +2,7 @@
   "venvPath": ".",
   "venv": ".venv",
   "pythonVersion": "3.11",
-  "extraPaths": ["src"]
+  "extraPaths": ["src"],
+  "typeCheckingMode": "strict",
+  "exclude": ["tests"]
 }

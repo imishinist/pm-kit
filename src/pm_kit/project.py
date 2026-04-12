@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -15,7 +16,7 @@ def find_project_dir() -> Path:
         current = parent
 
 
-def load_project(project_dir: Path) -> dict:
+def load_project(project_dir: Path) -> dict[str, Any]:
     """Load and return project.yaml as a dict."""
     path = project_dir / "project.yaml"
     return yaml.safe_load(path.read_text()) or {}

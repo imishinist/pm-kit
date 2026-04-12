@@ -3,6 +3,7 @@
 import json
 from datetime import date, timedelta
 from pathlib import Path
+from typing import Any
 
 import click
 import yaml
@@ -15,13 +16,13 @@ def _read_sprint_summary(jira_dir: Path) -> str | None:
     return None
 
 
-def _read_active_tickets(jira_dir: Path) -> list[dict]:
+def _read_active_tickets(jira_dir: Path) -> list[dict[str, str]]:
     """Read tickets that have detail (active tickets)."""
     tickets_dir = jira_dir / "tickets"
     if not tickets_dir.exists():
         return []
 
-    active = []
+    active: list[dict[str, str]] = []
     for ticket_dir in sorted(tickets_dir.iterdir()):
         ticket_md = ticket_dir / "ticket.md"
         if not ticket_md.exists():
@@ -35,14 +36,14 @@ def _read_active_tickets(jira_dir: Path) -> list[dict]:
     return active
 
 
-def _read_recent_slack_digests(slack_dir: Path, days: int = 3) -> list[dict]:
+def _read_recent_slack_digests(slack_dir: Path, days: int = 3) -> list[dict[str, str]]:
     """Read recent Slack digest files."""
     digest_dir = slack_dir / "digest"
     if not digest_dir.exists():
         return []
 
     today = date.today()
-    digests = []
+    digests: list[dict[str, str]] = []
     for i in range(days):
         d = today - timedelta(days=i)
         digest_file = digest_dir / f"{d}.md"
@@ -51,14 +52,14 @@ def _read_recent_slack_digests(slack_dir: Path, days: int = 3) -> list[dict]:
     return digests
 
 
-def _read_recent_slack_raw(slack_dir: Path, days: int = 1) -> list[dict]:
+def _read_recent_slack_raw(slack_dir: Path, days: int = 1) -> list[dict[str, Any]]:
     """Read recent raw Slack messages if no digests exist."""
     raw_dir = slack_dir / "raw"
     if not raw_dir.exists():
         return []
 
     today = date.today()
-    messages = []
+    messages: list[dict[str, Any]] = []
     for channel_dir in sorted(raw_dir.iterdir()):
         if not channel_dir.is_dir():
             continue
@@ -66,16 +67,18 @@ def _read_recent_slack_raw(slack_dir: Path, days: int = 1) -> list[dict]:
             d = today - timedelta(days=i)
             jsonl_file = channel_dir / f"{d}.jsonl"
             if jsonl_file.exists():
-                records = []
+                records: list[Any] = []
                 for line in jsonl_file.read_text().splitlines():
                     if line.strip():
                         records.append(json.loads(line))
-                messages.append({
-                    "channel": channel_dir.name,
-                    "date": str(d),
-                    "message_count": len(records),
-                    "records": records,
-                })
+                messages.append(
+                    {
+                        "channel": channel_dir.name,
+                        "date": str(d),
+                        "message_count": len(records),
+                        "records": records,
+                    }
+                )
     return messages
 
 
@@ -96,7 +99,9 @@ def _read_sprint_current(jira_dir: Path) -> str | None:
 def gather_daily_context(project_dir: Path) -> str:
     """Gather all relevant data and produce a context document for AI analysis."""
     config_path = project_dir / "project.yaml"
-    config = yaml.safe_load(config_path.read_text()) if config_path.exists() else {}
+    config: dict[str, Any] = (
+        yaml.safe_load(config_path.read_text()) if config_path.exists() else {}
+    )
 
     sections: list[str] = []
     sections.append(f"# Daily Check — {date.today()}")
@@ -143,13 +148,17 @@ def gather_daily_context(project_dir: Path) -> str:
         if raw:
             sections.append("## Slack Messages (Recent)")
             for r in raw:
-                sections.append(f"### #{r['channel']} — {r['date']} ({r['message_count']} messages)")
+                sections.append(
+                    f"### #{r['channel']} — {r['date']} ({r['message_count']} messages)"
+                )
                 for rec in r["records"][:20]:  # Limit to avoid overwhelming output
                     text = rec.get("text", "")
                     user = rec.get("user", "")
                     sections.append(f"- **{user}**: {text}")
                     for reply in rec.get("replies", []):
-                        sections.append(f"  - **{reply.get('user', '')}**: {reply.get('text', '')}")
+                        sections.append(
+                            f"  - **{reply.get('user', '')}**: {reply.get('text', '')}"
+                        )
                 sections.append("")
 
     # Risk register

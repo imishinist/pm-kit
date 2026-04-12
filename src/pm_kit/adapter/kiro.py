@@ -1,6 +1,7 @@
 """Generate Kiro configuration files for a project."""
 
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -11,8 +12,10 @@ def generate_kiro_config(project_dir: Path) -> list[str]:
     Returns a list of file paths that were created/updated.
     """
     config_path = project_dir / "project.yaml"
-    config = yaml.safe_load(config_path.read_text()) if config_path.exists() else {}
-    project_name = config.get("name", "project")
+    config: dict[str, Any] = (
+        yaml.safe_load(config_path.read_text()) if config_path.exists() else {}
+    )
+    project_name: str = config.get("name", "project")
 
     created: list[str] = []
 
@@ -27,8 +30,10 @@ def generate_kiro_config(project_dir: Path) -> list[str]:
     return created
 
 
-def _build_steering_files(project_dir: Path, config: dict, project_name: str) -> dict[str, str]:
-    files = {}
+def _build_steering_files(
+    project_dir: Path, _config: dict[str, Any], project_name: str
+) -> dict[str, str]:
+    files: dict[str, str] = {}
 
     # product.md — product context
     lines = [
@@ -68,17 +73,19 @@ def _build_steering_files(project_dir: Path, config: dict, project_name: str) ->
     files["product.md"] = "\n".join(lines)
 
     # tech.md — technical context
-    files["tech.md"] = "\n".join([
-        "# Tech Stack",
-        "",
-        "- pm-kit: Python (uv), Click CLI",
-        "- Data formats: YAML, Markdown, JSONL",
-        "- External integrations: Jira REST API, Slack Web API, Confluence REST API",
-        "",
-        "## Development Policy",
-        "",
-        "See CONTRIBUTING.md.",
-        "",
-    ])
+    files["tech.md"] = "\n".join(
+        [
+            "# Tech Stack",
+            "",
+            "- pm-kit: Python (uv), Click CLI",
+            "- Data formats: YAML, Markdown, JSONL",
+            "- External integrations: Jira REST API, Slack Web API, Confluence REST API",
+            "",
+            "## Development Policy",
+            "",
+            "See CONTRIBUTING.md.",
+            "",
+        ]
+    )
 
     return files

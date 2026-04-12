@@ -64,4 +64,6 @@ def update(project_dir: str) -> None:
             click.echo(f"  skipped: prompts/{src_file.name}")
             skipped += 1
 
-    click.echo(f"\nUpdate complete: {added} added, {updated} up-to-date, {skipped} skipped")
+    click.echo(
+        f"\nUpdate complete: {added} added, {updated} up-to-date, {skipped} skipped"
+    )

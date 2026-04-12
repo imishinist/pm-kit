@@ -1,6 +1,7 @@
 """Overview: cross-project summary and risk aggregation."""
 
 from pathlib import Path
+from typing import Any
 
 import click
 import yaml
@@ -8,11 +9,11 @@ import yaml
 from pm_kit.create import get_registry_path
 
 
-def _load_registry() -> list[dict]:
+def _load_registry() -> list[dict[str, Any]]:
     registry_path = get_registry_path()
     if not registry_path.exists():
         return []
-    data = yaml.safe_load(registry_path.read_text()) or {}
+    data: dict[str, Any] = yaml.safe_load(registry_path.read_text()) or {}
     return data.get("projects", [])
 
 
@@ -60,14 +61,14 @@ def build_overview() -> str:
         if project_dir.exists():
             config_path = project_dir / "project.yaml"
             if config_path.exists():
-                config = yaml.safe_load(config_path.read_text()) or {}
+                config: dict[str, Any] = yaml.safe_load(config_path.read_text()) or {}
                 desc = config.get("description", "")
                 if desc:
                     sections.append(f"- Description: {desc}")
 
             board = _read_board_summary(project_dir)
             if board:
-                sections.append(f"- Board: synced")
+                sections.append("- Board: synced")
 
         sections.append("")
 

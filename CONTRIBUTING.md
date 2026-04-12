@@ -3,8 +3,11 @@
 ## Build & Test
 
 ```bash
-uv sync          # Install dependencies
-uv run pytest -v # Run tests
+uv sync                         # Install dependencies
+uv run pytest -v                # Run tests
+uv run ruff check src/ tests/   # Lint
+uv run ruff format src/ tests/  # Format
+uv run basedpyright src/        # Type check (strict)
 ```
 
 ## Development Policy

@@ -1,15 +1,24 @@
-import json
-
 from click.testing import CliRunner
 
 from pm_kit.cli import main
 from pm_kit.sync.jira import _render_ticket_md, _render_comments_md, _ticket_frontmatter
 from pm_kit.sync.slack import _message_to_record, _ts_to_date
-from pm_kit.sync.confluence import _slugify, _build_breadcrumb, _build_meta, _render_page_md
+from pm_kit.sync.confluence import (
+    _slugify,
+    _build_breadcrumb,
+    _build_meta,
+    _render_page_md,
+)
 
 
 class TestJiraRendering:
-    def _make_issue(self, key="TEST-1", summary="Fix bug", status="In Progress", description="Details here"):
+    def _make_issue(
+        self,
+        key="TEST-1",
+        summary="Fix bug",
+        status="In Progress",
+        description="Details here",
+    ):
         return {
             "key": key,
             "fields": {
@@ -47,8 +56,16 @@ class TestJiraRendering:
 
     def test_render_comments_md(self):
         comments = [
-            {"author": {"displayName": "Bob"}, "created": "2026-04-12", "body": "Looks good"},
-            {"author": {"displayName": "Carol"}, "created": "2026-04-13", "body": "Approved"},
+            {
+                "author": {"displayName": "Bob"},
+                "created": "2026-04-12",
+                "body": "Looks good",
+            },
+            {
+                "author": {"displayName": "Carol"},
+                "created": "2026-04-13",
+                "body": "Approved",
+            },
         ]
         md = _render_comments_md(comments)
         assert "## Bob" in md
@@ -77,7 +94,13 @@ class TestSlackRendering:
         assert rec["replies"] == []
 
     def test_message_to_record_with_replies(self):
-        msg = {"ts": "100", "user": "U01", "text": "question?", "reply_count": 2, "thread_ts": "100"}
+        msg = {
+            "ts": "100",
+            "user": "U01",
+            "text": "question?",
+            "reply_count": 2,
+            "thread_ts": "100",
+        }
         replies = [
             {"ts": "101", "user": "U02", "text": "answer1"},
             {"ts": "102", "user": "U03", "text": "answer2"},
@@ -111,7 +134,11 @@ class TestConfluenceRendering:
             "ancestors": [{"id": "100", "title": "Parent"}],
             "children": {"page": {"results": [{"id": "200"}, {"id": "201"}]}},
             "metadata": {"labels": {"results": [{"name": "important"}]}},
-            "version": {"by": {"displayName": "Alice"}, "when": "2026-04-12", "number": 3},
+            "version": {
+                "by": {"displayName": "Alice"},
+                "when": "2026-04-12",
+                "number": 3,
+            },
         }
         meta = _build_meta(page)
         assert meta["id"] == "123"
