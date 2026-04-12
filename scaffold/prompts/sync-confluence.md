@@ -1,18 +1,18 @@
-# Confluence 同期
+# Confluence Sync
 
-## 目的
+## Purpose
 
-Confluence スペースのページをローカルに同期する。
+Sync Confluence space pages locally.
 
-## 使い方
+## Usage
 
 ```bash
 pm-kit sync confluence
 ```
 
-## 同期ルール
+## Sync Rules
 
-- 全ページを同期（本文 + メタデータ + 添付ファイル）
-- page.md 冒頭にパンくずで階層表現
-- index.md にページツリーの全体構造
-- meta.yaml に parent/children で階層情報
+- Sync all pages (body + metadata + attachments)
+- page.md begins with a breadcrumb showing hierarchy
+- index.md contains the full page tree structure
+- meta.yaml holds parent/children for scripting

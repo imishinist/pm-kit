@@ -1,24 +1,24 @@
-# リスクマネジメント
+# Risk Management
 
-## リスクの分類
+## Risk Categories
 
-- **スケジュール**: 期限遅延、依存タスクの遅れ
-- **技術**: 技術的な不確実性、性能問題
-- **外部**: ベンダー依存、法規制変更
-- **リソース**: 人員不足、スキルギャップ
-- **セキュリティ**: 脆弱性、データ漏洩
+- **Schedule**: Deadline delays, dependent task delays
+- **Technical**: Technical uncertainty, performance issues
+- **External**: Vendor dependencies, regulatory changes
+- **Resource**: Staff shortages, skill gaps
+- **Security**: Vulnerabilities, data leaks
 
-## リスク評価マトリクス
+## Risk Assessment Matrix
 
-| 確率 \ 影響度 | 低 | 中 | 高 |
-|--------------|---|---|---|
-| 高 | 中 | 高 | 最高 |
-| 中 | 低 | 中 | 高 |
-| 低 | 最低 | 低 | 中 |
+| Probability \ Impact | Low | Medium | High |
+|----------------------|-----|--------|------|
+| High                 | Medium | High | Critical |
+| Medium               | Low | Medium | High |
+| Low                  | Minimal | Low | Medium |
 
-## 対応戦略
+## Response Strategies
 
-- **回避**: リスクの原因を除去する
-- **軽減**: 確率または影響度を下げる
-- **転嫁**: 第三者にリスクを移転する（保険、外注等）
-- **受容**: リスクを認識した上で対応しない
+- **Avoid**: Eliminate the root cause of the risk
+- **Mitigate**: Reduce probability or impact
+- **Transfer**: Shift the risk to a third party (insurance, outsourcing, etc.)
+- **Accept**: Acknowledge the risk and take no action

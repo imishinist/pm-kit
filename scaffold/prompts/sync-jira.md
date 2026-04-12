@@ -1,17 +1,17 @@
-# Jira 同期
+# Jira Sync
 
-## 目的
+## Purpose
 
-Jira のチケット・スプリント情報をローカルに同期する。
+Sync Jira ticket and sprint information locally.
 
-## 使い方
+## Usage
 
 ```bash
 pm-kit sync jira
 ```
 
-## 同期ルール
+## Sync Rules
 
-- 全チケット: frontmatter のみ（ticket.md）
-- アクティブチケット（現スプリント or カンバンの進行中）: 詳細 + コメント
-- 初回は全件取得、以降は差分更新
+- All tickets: frontmatter only (ticket.md)
+- Active tickets (current sprint or kanban in-progress): full details + comments
+- First run fetches all; subsequent runs do incremental updates

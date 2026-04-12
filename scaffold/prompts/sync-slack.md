@@ -1,17 +1,17 @@
-# Slack 同期
+# Slack Sync
 
-## 目的
+## Purpose
 
-Slack チャンネルのメッセージをローカルに同期し、AI ダイジェストを生成する。
+Sync Slack channel messages locally and generate AI digests.
 
-## 使い方
+## Usage
 
 ```bash
 pm-kit sync slack
 ```
 
-## 同期ルール
+## Sync Rules
 
-- raw: チャンネルごと・日付ごとに jsonl
-- スレッド: 親メッセージの replies にネスト
-- digest: raw から AI が日次サマリを生成
+- raw: JSONL files per channel per date
+- Threads: nested under parent message's replies field
+- digest: AI-generated daily summary from raw data

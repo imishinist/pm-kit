@@ -1,16 +1,16 @@
 ---
 name: create-project
-description: 新しいプロジェクトを作成し、対話的にセットアップする
+description: Create a new project and set it up interactively
 ---
 
-# プロジェクト作成
+# Project Creation
 
-## 手順
+## Steps
 
-1. ユーザーにプロジェクト名と作成先パスを確認する
-2. `pm-kit create <name> --path <path>` を実行してスキャフォルドを生成する
-3. 生成されたディレクトリに移動する
-4. `prompts/create-interview.md` を読み込み、その指示に従ってユーザーにヒアリングを行う
-5. ヒアリング結果を `project.yaml` に反映する
-6. `pm-kit adapter claude` を実行して Claude Code の設定ファイルを生成する
-7. `.envrc` に必要な認証情報の設定を案内する
+1. Ask the user for the project name and destination path
+2. Run `pm-kit create <name> --path <path>` to scaffold the project
+3. Change to the generated directory
+4. Read `prompts/create-interview.md` and follow its instructions to interview the user
+5. Write interview results into `project.yaml`
+6. Run `pm-kit adapter claude` to generate Claude Code configuration files
+7. Guide the user to configure authentication credentials in `.envrc`

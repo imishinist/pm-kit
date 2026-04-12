@@ -1,17 +1,17 @@
-# {{ name }} — プロジェクトポリシー
+# {{ name }} — Project Policy
 
-## 基本方針
+## Principles
 
-このファイルにプロジェクト固有のポリシーを記述してください。
+Describe project-specific policies here.
 
-## コミュニケーション
+## Communication
 
-- 主要な連絡手段:
-- 定例会議:
-- エスカレーション先:
+- Primary communication channel:
+- Regular meetings:
+- Escalation path:
 
-## 品質基準
+## Quality Standards
 
-- レビュー基準:
-- テスト方針:
-- リリース基準:
+- Review criteria:
+- Testing policy:
+- Release criteria:

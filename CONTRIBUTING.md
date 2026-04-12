@@ -1,17 +1,17 @@
-# 開発ガイド
+# Development Guide
 
-## ビルド・テスト
+## Build & Test
 
 ```bash
-uv sync          # 依存インストール
-uv run pytest -v # テスト実行
+uv sync          # Install dependencies
+uv run pytest -v # Run tests
 ```
 
-## 開発ポリシー
+## Development Policy
 
-### テスト
+### Testing
 
-- 機能を追加・変更したら、対応するテストを必ず書く
-- テストは `tests/` 以下に `test_<module>.py` の命名で配置する
-- `tmp_path` や `monkeypatch` を活用し、実環境（ファイルシステム、registry 等）を汚さない
-- テストが全て pass することを確認してから作業完了とする
+- Always write tests when adding or changing functionality
+- Place tests in `tests/` as `test_<module>.py`
+- Use `tmp_path` and `monkeypatch` to avoid polluting the real environment (filesystem, registry, etc.)
+- Ensure all tests pass before considering work complete

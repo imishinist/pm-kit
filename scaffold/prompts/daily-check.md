@@ -1,36 +1,36 @@
-# デイリーチェック
+# Daily Check
 
-## 目的
+## Purpose
 
-プロジェクトの現状を把握し、注意すべき事項を洗い出す。
+Assess the current state of the project and identify items requiring attention.
 
-## 分析指示
+## Analysis Instructions
 
-上記のデータを元に、以下の観点で分析・報告してください。
+Based on the data above, analyze and report on the following aspects.
 
-### 1. 進捗サマリ
+### 1. Progress Summary
 
-- スプリント/ボードの全体的な進捗状況
-- 予定と実績のギャップ
-- 完了が近いチケット、停滞しているチケット
+- Overall sprint/board progress
+- Gaps between planned and actual progress
+- Tickets nearing completion, tickets that are stalled
 
-### 2. ブロッカー・懸念事項
+### 2. Blockers and Concerns
 
-- ステータスが長期間変わっていないチケット
-- Slack で議論されている課題や未解決の質問
-- 依存関係による遅延リスク
+- Tickets whose status has not changed for an extended period
+- Issues or unresolved questions discussed in Slack
+- Delay risks due to dependencies
 
-### 3. リスク確認
+### 3. Risk Review
 
-- risk-register.md の open リスクの現状
-- 新たなリスク兆候（Slack の議論やチケットの傾向から）
+- Current status of open risks in risk-register.md
+- New risk indicators (from Slack discussions or ticket trends)
 
-### 4. 本日のアクション候補
+### 4. Suggested Actions for Today
 
-- 優先的に対処すべき事項を 3〜5 件提案
-- 各アクションの理由と期待効果を簡潔に説明
+- Propose 3-5 items to address with priority
+- Briefly explain the rationale and expected impact of each action
 
-## 出力形式
+## Output Format
 
-Markdown で、上記の各セクションに分けて報告してください。
-具体的な根拠（チケット番号、Slack の発言等）を含めてください。
+Report in Markdown, organized by the sections above.
+Include specific evidence (ticket numbers, Slack messages, etc.).

@@ -1,19 +1,19 @@
-# 見積もり
+# Estimation
 
-## 見積もり手法
+## Estimation Methods
 
-- **類推見積もり**: 過去の類似プロジェクトから推定
-- **ボトムアップ見積もり**: 作業を分解して積み上げ
-- **三点見積もり**: 楽観値・最頻値・悲観値の加重平均
-  - 期待値 = (楽観 + 4×最頻 + 悲観) / 6
+- **Analogous estimation**: Derive from similar past projects
+- **Bottom-up estimation**: Decompose work and sum up
+- **Three-point estimation**: Weighted average of optimistic, most likely, and pessimistic
+  - Expected = (Optimistic + 4 x Most Likely + Pessimistic) / 6
 
-## バッファの考え方
+## Buffer Strategy
 
-- 個別タスクにバッファを積まない（パーキンソンの法則を避ける）
-- プロジェクト全体 or フェーズ単位でバッファを確保
-- クリティカルチェーン法の活用
+- Do not pad individual tasks (avoid Parkinson's Law)
+- Reserve buffer at the project or phase level
+- Consider Critical Chain Method
 
-## ベロシティ管理
+## Velocity Management
 
-- 直近3〜5スプリントの平均を基準に
-- 外れ値（休暇、障害対応等）は除外して計算
+- Use the average of the last 3-5 sprints as baseline
+- Exclude outliers (vacations, incident response, etc.) from the calculation

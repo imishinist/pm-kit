@@ -34,32 +34,32 @@ def _build_steering_files(project_dir: Path, config: dict, project_name: str) ->
     lines = [
         f"# {project_name}",
         "",
-        "このプロジェクトは pm-kit で管理されています。",
+        "This project is managed by pm-kit.",
         "",
-        "## 参照すべきファイル",
+        "## Files to Reference",
         "",
-        "- `project.yaml` — プロジェクト設定",
-        "- `policy.md` — プロジェクトポリシー",
-        "- `prompts/` — AI への指示プロンプト集",
-        "- `knowledge/` — PM 知識ベース",
-        "- `data/` — 外部サービスから同期されたデータ",
-        "- `risks/` — リスク一覧",
-        "- `decisions/` — 意思決定ログ",
+        "- `project.yaml` — Project configuration",
+        "- `policy.md` — Project policy",
+        "- `prompts/` — AI instruction prompts",
+        "- `knowledge/` — PM knowledge base",
+        "- `data/` — Data synced from external services",
+        "- `risks/` — Risk register",
+        "- `decisions/` — Decision log",
         "",
-        "## 利用可能なコマンド",
+        "## Available Commands",
         "",
         "```bash",
-        "pm-kit daily              # デイリーチェック",
-        "pm-kit sync jira          # Jira 同期",
-        "pm-kit sync slack         # Slack 同期",
-        "pm-kit sync confluence    # Confluence 同期",
+        "pm-kit daily              # Daily check",
+        "pm-kit sync jira          # Sync Jira",
+        "pm-kit sync slack         # Sync Slack",
+        "pm-kit sync confluence    # Sync Confluence",
         "```",
         "",
     ]
 
     prompts_dir = project_dir / "prompts"
     if prompts_dir.exists():
-        lines.append("## プロンプト一覧")
+        lines.append("## Prompts")
         lines.append("")
         for p in sorted(prompts_dir.glob("*.md")):
             lines.append(f"- `prompts/{p.name}`")
@@ -69,15 +69,15 @@ def _build_steering_files(project_dir: Path, config: dict, project_name: str) ->
 
     # tech.md — technical context
     files["tech.md"] = "\n".join([
-        "# 技術スタック",
+        "# Tech Stack",
         "",
         "- pm-kit: Python (uv), Click CLI",
-        "- データ形式: YAML, Markdown, JSONL",
-        "- 外部連携: Jira REST API, Slack Web API, Confluence REST API",
+        "- Data formats: YAML, Markdown, JSONL",
+        "- External integrations: Jira REST API, Slack Web API, Confluence REST API",
         "",
-        "## 開発ポリシー",
+        "## Development Policy",
         "",
-        "CONTRIBUTING.md を参照。",
+        "See CONTRIBUTING.md.",
         "",
     ])
 

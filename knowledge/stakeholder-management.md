@@ -1,15 +1,15 @@
-# ステークホルダーマネジメント
+# Stakeholder Management
 
-## ステークホルダーの分類
+## Stakeholder Classification
 
-- **権限-関心マトリクス**で優先度を判断
-  - 高権限・高関心: 密に連携
-  - 高権限・低関心: 満足を維持
-  - 低権限・高関心: 情報提供
-  - 低権限・低関心: モニタリング
+- Use the **Power-Interest Matrix** to determine priority
+  - High power, High interest: Manage closely
+  - High power, Low interest: Keep satisfied
+  - Low power, High interest: Keep informed
+  - Low power, Low interest: Monitor
 
-## コミュニケーション計画
+## Communication Plan
 
-- 誰に、何を、どの頻度で、どの手段で伝えるか
-- エスカレーションパスの明確化
-- 定例会議 vs 随時報告の使い分け
+- Define who receives what information, how often, and through which channel
+- Clarify escalation paths
+- Distinguish between regular meetings and ad-hoc reporting

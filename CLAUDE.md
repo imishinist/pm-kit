@@ -1,35 +1,39 @@
 # pm-kit
 
-AIツール上で動作するプロジェクト管理フレームワーク。このリポジトリがフレームワーク本体。
+A project management framework that runs on top of AI tools. This repo is the framework itself.
 
-## リポジトリ構造
+## Communication
 
-- `src/pm_kit/` — CLI + コアロジック
-  - `cli.py` — エントリポイント（Click）
-  - `create.py` — `pm-kit create` スキャフォルド
-  - `daily.py` — `pm-kit daily` デイリーチェック
-  - `overview.py` — `pm-kit overview` 横断ビュー
-  - `project.py` — project.yaml 読み込みユーティリティ
-  - `sync/` — Jira, Slack, Confluence 同期スクリプト
-  - `adapter/` — Claude Code, Kiro 用設定ファイル生成
-- `scaffold/` — PJ スキャフォルドテンプレート（.template は Jinja2）
-- `knowledge/` — PM 知識ベース（PJ からシンボリックリンクで参照）
-- `prompts/` — AI への指示プロンプト
-- `tests/` — pytest テスト
-- `docs/design.md` — 設計ドキュメント
+Always communicate with the user in Japanese unless they specify otherwise.
 
-## コマンド
+## Repository structure
+
+- `src/pm_kit/` — CLI + core logic
+  - `cli.py` — Entry point (Click)
+  - `create.py` — `pm-kit create` scaffolding
+  - `daily.py` — `pm-kit daily` daily check
+  - `overview.py` — `pm-kit overview` cross-project view
+  - `project.py` — project.yaml loader utility
+  - `sync/` — Jira, Slack, Confluence sync scripts
+  - `adapter/` — Claude Code, Kiro config generators
+- `scaffold/` — Project scaffold templates (.template files use Jinja2)
+- `knowledge/` — PM knowledge base (symlinked from projects)
+- `prompts/` — AI instruction prompts
+- `tests/` — pytest tests
+- `docs/design.md` — Design document
+
+## Commands
 
 ```bash
-uv sync                         # 依存インストール
-uv run pm-kit create <name>     # PJ作成
-uv run pm-kit sync {jira,slack,confluence}  # データ同期
-uv run pm-kit daily             # デイリーチェック
-uv run pm-kit adapter {claude,kiro}  # アダプター生成
-uv run pm-kit overview          # 横断ビュー
-uv run pytest -v                # テスト実行
+uv sync                         # Install dependencies
+uv run pm-kit create <name>     # Create project
+uv run pm-kit sync {jira,slack,confluence}  # Sync data
+uv run pm-kit daily             # Daily check
+uv run pm-kit adapter {claude,kiro}  # Generate adapter configs
+uv run pm-kit overview          # Cross-project overview
+uv run pytest -v                # Run tests
 ```
 
-## 開発ポリシー
+## Development policy
 
-[CONTRIBUTING.md](CONTRIBUTING.md) を参照。
+See [CONTRIBUTING.md](CONTRIBUTING.md).

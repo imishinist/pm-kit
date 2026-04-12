@@ -1,15 +1,15 @@
-# リスクレビュー
+# Risk Review
 
-## 目的
+## Purpose
 
-リスク一覧を見直し、新たなリスクの識別と既存リスクのステータス更新を行う。
+Review the risk register, identify new risks, and update the status of existing ones.
 
-## 手順
+## Procedure
 
-1. `risks/risk-register.md` の全リスクを確認
-2. 同期データ（Jira, Slack, Confluence）から新たなリスク兆候を検出
-3. 各リスクについて:
-   - 確率・影響度の再評価
-   - 対応策の進捗確認
-   - ステータス更新（open / mitigating / closed）
-4. 新規リスクがあれば追加を提案
+1. Review all risks in `risks/risk-register.md`
+2. Detect new risk indicators from synced data (Jira, Slack, Confluence)
+3. For each risk:
+   - Re-evaluate probability and impact
+   - Check mitigation progress
+   - Update status (open / mitigating / closed)
+4. Propose additions for any newly identified risks

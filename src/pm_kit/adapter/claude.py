@@ -37,37 +37,37 @@ def _build_claude_md(project_dir: Path, config: dict, project_name: str) -> str:
     lines = [
         f"# {project_name}",
         "",
-        "このプロジェクトは pm-kit で管理されています。",
+        "This project is managed by pm-kit.",
         "",
-        "## 参照すべきファイル",
+        "## Files to Reference",
         "",
-        "- `project.yaml` — プロジェクト設定",
-        "- `policy.md` — プロジェクトポリシー",
-        "- `prompts/` — AI への指示プロンプト集",
-        "- `knowledge/` — PM 知識ベース",
-        "- `data/` — 外部サービスから同期されたデータ",
-        "- `risks/` — リスク一覧",
-        "- `decisions/` — 意思決定ログ",
+        "- `project.yaml` — Project configuration",
+        "- `policy.md` — Project policy",
+        "- `prompts/` — AI instruction prompts",
+        "- `knowledge/` — PM knowledge base",
+        "- `data/` — Data synced from external services",
+        "- `risks/` — Risk register",
+        "- `decisions/` — Decision log",
         "",
-        "## 利用可能なコマンド",
+        "## Available Commands",
         "",
         "```bash",
-        "pm-kit daily              # デイリーチェック",
-        "pm-kit sync jira          # Jira 同期",
-        "pm-kit sync slack         # Slack 同期",
-        "pm-kit sync confluence    # Confluence 同期",
+        "pm-kit daily              # Daily check",
+        "pm-kit sync jira          # Sync Jira",
+        "pm-kit sync slack         # Sync Slack",
+        "pm-kit sync confluence    # Sync Confluence",
         "```",
         "",
-        "## 開発ポリシー",
+        "## Development Policy",
         "",
-        "CONTRIBUTING.md を参照。",
+        "See CONTRIBUTING.md.",
         "",
     ]
 
     # Add prompt index
     prompts_dir = project_dir / "prompts"
     if prompts_dir.exists():
-        lines.append("## プロンプト一覧")
+        lines.append("## Prompts")
         lines.append("")
         for p in sorted(prompts_dir.glob("*.md")):
             lines.append(f"- `prompts/{p.name}`")
@@ -82,40 +82,40 @@ def _build_skills(config: dict) -> dict[str, str]:
     skills["daily-check.md"] = "\n".join([
         "---",
         "name: daily-check",
-        "description: デイリーチェックを実行し、プロジェクト状況を分析する",
+        "description: Run daily check and analyze project status",
         "---",
         "",
-        "1. `pm-kit sync jira` でJiraを同期（設定済みの場合）",
-        "2. `pm-kit sync slack` でSlackを同期（設定済みの場合）",
-        "3. `pm-kit daily` を実行して分析コンテキストを取得",
-        "4. 出力内容を元に `prompts/daily-check.md` の指示に従って分析・報告",
+        "1. Run `pm-kit sync jira` to sync Jira (if configured)",
+        "2. Run `pm-kit sync slack` to sync Slack (if configured)",
+        "3. Run `pm-kit daily` to gather analysis context",
+        "4. Analyze and report based on the output, following `prompts/daily-check.md`",
         "",
     ])
 
     skills["sync-all.md"] = "\n".join([
         "---",
         "name: sync-all",
-        "description: 全データソースを一括同期する",
+        "description: Sync all configured data sources",
         "---",
         "",
-        "以下を順に実行:",
+        "Run the following in order:",
         "",
-        "1. `pm-kit sync jira`（jira が設定されている場合）",
-        "2. `pm-kit sync slack`（slack が設定されている場合）",
-        "3. `pm-kit sync confluence`（confluence が設定されている場合）",
+        "1. `pm-kit sync jira` (if jira is configured)",
+        "2. `pm-kit sync slack` (if slack is configured)",
+        "3. `pm-kit sync confluence` (if confluence is configured)",
         "",
     ])
 
     skills["risk-review.md"] = "\n".join([
         "---",
         "name: risk-review",
-        "description: リスクレビューを実行する",
+        "description: Run a risk review",
         "---",
         "",
-        "1. `risks/risk-register.md` を読み込む",
-        "2. `prompts/risk-review.md` の指示に従ってリスクを分析",
-        "3. 同期データから新たなリスク兆候を検出",
-        "4. risk-register.md の更新を提案",
+        "1. Read `risks/risk-register.md`",
+        "2. Analyze risks following `prompts/risk-review.md`",
+        "3. Detect new risk indicators from synced data",
+        "4. Propose updates to risk-register.md",
         "",
     ])
 
