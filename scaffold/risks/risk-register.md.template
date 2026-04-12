@@ -1,4 +1,6 @@
 # {{ name }} — Risk Register
 
-| ID | Title | Category | Probability | Impact | Owner | Status | Updated |
-|----|-------|----------|-------------|--------|-------|--------|---------|
+| ID | Title | Priority | Status | Updated |
+|----|-------|----------|--------|---------|
+
+<!-- Add rows as risks are created. See knowledge/risk-management.md for format. -->
