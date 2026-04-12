@@ -120,6 +120,8 @@ my-project/
 │   ├── sync-jira.md
 │   ├── sync-slack.md
 │   ├── sync-confluence.md
+│   ├── save-meeting.md
+│   ├── manage-repos.md
 │   ├── daily-check.md
 │   └── overview.md
 ├── knowledge/                   ← pm-kitへのシンボリックリンク
@@ -344,6 +346,8 @@ PJディレクトリで coding agent が実行する skill 定義。`scaffold/sk
 | sync-jira | Jira データを取得して data/jira/ に保存 |
 | sync-slack | Slack データを取得して data/slack/ に保存 |
 | sync-confluence | Confluence データを取得して data/confluence/ に保存 |
+| save-meeting | 議事録を適切なフォーマットで data/meetings/ に保存 |
+| manage-repos | repos/ の git submodule 管理（追加・更新・削除） |
 | daily-check | 同期データを読んで日次の注意事項を分析・レポート |
 | overview | 複数PJの横断ビュー・リスク集約 |
 
