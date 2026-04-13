@@ -20,7 +20,6 @@ Always communicate with the user in Japanese unless they specify otherwise.
   - `skills/` — Agent skill definitions (sync, daily-check, overview)
   - `prompts/` — AI instruction prompts (system, risk-review, create-interview)
 - `knowledge/` — PM knowledge base (symlinked from projects)
-- `prompts/` — AI instruction prompts (for pm-kit repo itself)
 - `tests/` — pytest tests
 - `docs/design.md` — Design document
 

@@ -75,7 +75,6 @@ pm-kit/
 │   ├── skills/           # Agent skill definitions
 │   └── prompts/          # AI instruction prompts
 ├── knowledge/            # PM knowledge base
-├── prompts/              # AI instruction prompts (for pm-kit repo itself)
 ├── tests/                # Tests
 └── docs/design.md        # Design document
 ```
