@@ -125,3 +125,7 @@ Active issues (detail): <count>
 - Do not delete any existing files — tickets that were previously active keep their `comments.md` as historical data
 - Do not delete ticket directories for tickets that did not appear in the incremental fetch — they are simply outside the update window
 - Sprint files are overwritten on each sync (sprints are keyed by ID)
+
+## Post-Sync
+
+After saving data, run the **build-index** skill to update `data/INDEX.md`.

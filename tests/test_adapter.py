@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from click.testing import CliRunner
 
 from pm_kit.adapter.claude import generate_claude_config

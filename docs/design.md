@@ -127,6 +127,7 @@ my-project/
 ├── knowledge/                   ← pm-kitへのシンボリックリンク
 │
 ├── data/
+│   ├── INDEX.md             ← 全データソースの要約・所在マップ
 │   ├── jira/
 │   │   ├── board.md             ← ボード全体のサマリ + 統計
 │   │   ├── sprints/
@@ -349,6 +350,7 @@ PJディレクトリで coding agent が実行する skill 定義。`scaffold/sk
 | save-meeting | 議事録を適切なフォーマットで data/meetings/ に保存 |
 | manage-repos | repos/ の git submodule 管理（追加・更新・削除） |
 | daily-check | 同期データを読んで日次の注意事項を分析・レポート |
+| build-index | 全データソースの要約・所在マップ（data/INDEX.md）を生成 |
 | overview | 複数PJの横断ビュー・リスク集約 |
 
 各 skill プロンプトには以下を記述する:

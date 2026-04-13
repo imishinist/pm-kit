@@ -93,3 +93,7 @@ data/repos/
 - Keep `project.yaml` in sync with the actual submodules
 - When adding, confirm the repository URL and name with the user before proceeding
 - Regenerate summary files when repositories are updated and content has changed
+
+## Post-Sync
+
+After adding, updating, or removing repositories, run the **build-index** skill to update `data/INDEX.md`.

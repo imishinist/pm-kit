@@ -108,3 +108,7 @@ Entries are sorted alphabetically by title.
 - Page directories use the format `<id>-<slug>`, so even if a title changes, the same ID keeps the same directory (the slug portion may change — if so, remove the old directory and create a new one)
 - On each sync, overwrite `page.md`, `meta.yaml`, and re-download attachments for all fetched pages
 - Rebuild `index.md` from scratch on each sync
+
+## Post-Sync
+
+After saving data, run the **build-index** skill to update `data/INDEX.md`.

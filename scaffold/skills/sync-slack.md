@@ -81,3 +81,7 @@ After saving raw data, generate a daily digest in `data/slack/digest/<YYYY-MM-DD
 - Decisions made
 - Action items identified
 - Unresolved questions
+
+## Post-Sync
+
+After saving data, run the **build-index** skill to update `data/INDEX.md`.
