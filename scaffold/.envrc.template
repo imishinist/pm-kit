@@ -1,0 +1,12 @@
+# Jira
+export JIRA_URL=""
+export JIRA_USER=""
+export JIRA_API_TOKEN=""
+
+# Slack
+export SLACK_BOT_TOKEN=""
+
+# Confluence
+export CONFLUENCE_URL=""
+export CONFLUENCE_USER=""
+export CONFLUENCE_API_TOKEN=""

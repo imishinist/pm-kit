@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+
+# Override global .env* ignore for scaffold templates
+!scaffold/.envrc.template
