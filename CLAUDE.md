@@ -11,13 +11,14 @@ Always communicate with the user in Japanese unless they specify otherwise.
 - `src/pm_kit/` — CLI + core logic
   - `cli.py` — Entry point (Click)
   - `create.py` — `pm-kit create` scaffolding
+  - `update.py` — `pm-kit update` project updater
   - `schema.py` — `pm-kit schema` sync output JSON schema
   - `project.py` — project.yaml loader utility
   - `sync/` — Jira, Slack, Confluence data fetchers (raw JSON output)
   - `adapter/` — Claude Code, Kiro config generators
 - `scaffold/` — Project scaffold templates (.template files use Jinja2)
   - `skills/` — Agent skill definitions (sync, daily-check, overview)
-  - `prompts/` — AI instruction prompts (system, risk-review)
+  - `prompts/` — AI instruction prompts (system, risk-review, create-interview)
 - `knowledge/` — PM knowledge base (symlinked from projects)
 - `prompts/` — AI instruction prompts (for pm-kit repo itself)
 - `tests/` — pytest tests

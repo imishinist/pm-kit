@@ -11,28 +11,30 @@ Always communicate with the user in Japanese unless they specify otherwise.
 - `src/pm_kit/` — CLI + core logic
   - `cli.py` — Entry point (Click)
   - `create.py` — `pm-kit create` scaffolding
-  - `daily.py` — `pm-kit daily` daily check
-  - `overview.py` — `pm-kit overview` cross-project view
+  - `update.py` — `pm-kit update` project updater
+  - `schema.py` — `pm-kit schema` sync output JSON schema
   - `project.py` — project.yaml loader utility
-  - `sync/` — Jira, Slack, Confluence sync scripts
+  - `sync/` — Jira, Slack, Confluence data fetchers (raw JSON output)
   - `adapter/` — Claude Code, Kiro config generators
 - `scaffold/` — Project scaffold templates (.template files use Jinja2)
+  - `skills/` — Agent skill definitions (sync, daily-check, overview)
+  - `prompts/` — AI instruction prompts (system, risk-review, create-interview)
 - `knowledge/` — PM knowledge base (symlinked from projects)
-- `prompts/` — AI instruction prompts
+- `prompts/` — AI instruction prompts (for pm-kit repo itself)
 - `tests/` — pytest tests
 - `docs/design.md` — Design document
 
 ## Commands
 
 ```bash
-uv sync                         # Install dependencies
 uv run pm-kit create <name>     # Create project
-uv run pm-kit sync {jira,slack,confluence}  # Sync data
-uv run pm-kit daily             # Daily check
+uv run pm-kit update <path>     # Update project prompts and skills from scaffold
+uv run pm-kit sync {jira,slack,confluence}  # Fetch data as JSON to stdout
+uv run pm-kit schema {jira,slack,confluence}  # Show sync output JSON schema
 uv run pm-kit adapter {claude,kiro}  # Generate adapter configs
-uv run pm-kit overview          # Cross-project overview
-uv run pytest -v                # Run tests
 ```
+
+For build, test, lint, and type check commands, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Development policy
 

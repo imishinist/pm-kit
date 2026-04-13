@@ -18,3 +18,8 @@ uv run basedpyright src/        # Type check (strict)
 - Place tests in `tests/` as `test_<module>.py`
 - Use `tmp_path` and `monkeypatch` to avoid polluting the real environment (filesystem, registry, etc.)
 - Ensure all tests pass before considering work complete
+
+### AI Tool Configuration (CLAUDE.md / .kiro/)
+
+`CLAUDE.md` and `.kiro/steering/pm-kit/GUIDELINE.md` must always have the same content.
+When you update one, update the other as well.
