@@ -163,6 +163,11 @@ my-project/
 │   └── risk-register.md
 ├── decisions/
 │
+├── roadmap/
+│   ├── overview.md              ← タイムライン + 目標
+│   └── milestones/
+│       └── ms-001-mvp-release.md
+│
 ├── repos/                       ← git submodule（参照用）
 │   ├── billing-api/
 │   └── billing-web/
@@ -350,6 +355,10 @@ PJディレクトリで coding agent が実行する skill 定義。`scaffold/sk
 | save-meeting | 議事録を適切なフォーマットで data/meetings/ に保存 |
 | manage-repos | repos/ の git submodule 管理（追加・更新・削除） |
 | daily-check | 同期データを読んで日次の注意事項を分析・レポート |
+| manage-roadmap | ロードマップ管理（Confluence 双方向同期） |
+| manage-notes | メモの作成・検索・昇格（risks/decisions への変換） |
+| manage-risks | リスクの作成・更新・レビュー（risk-register 管理） |
+| manage-decisions | ADR の作成・承認・置換 |
 | build-index | 全データソースの要約・所在マップ（data/INDEX.md）を生成 |
 | overview | 複数PJの横断ビュー・リスク集約 |
 

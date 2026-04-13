@@ -101,6 +101,9 @@ def create(name: str, dest_path: str | None) -> None:
         scaffold_dir / "risks" / "risk-register.md.template": project_dir
         / "risks"
         / "risk-register.md",
+        scaffold_dir / "roadmap" / "overview.md.template": project_dir
+        / "roadmap"
+        / "overview.md",
     }
 
     for src, dst in templates.items():
@@ -117,6 +120,7 @@ def create(name: str, dest_path: str | None) -> None:
         "data/confluence",
         "data/meetings",
         "data/repos",
+        "roadmap/milestones",
         "decisions",
         "notes",
     ]:

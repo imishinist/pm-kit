@@ -21,6 +21,7 @@ Scan the following directories under `data/` and summarize what is available:
 | `data/confluence/` | `index.md`, `pages/` |
 | `data/repos/` | `*.md` summary files |
 | `data/meetings/` | `*.md` meeting notes |
+| `roadmap/` | `overview.md`, `milestones/` |
 
 Skip any directory that is empty or contains only `.gitkeep`.
 
@@ -33,6 +34,7 @@ For each data source that has data:
 3. **Confluence**: Read `index.md` for the page count and page tree. Summarize the top-level page structure (root pages and their direct children).
 4. **Repos**: Read each `<name>.md` summary file. Extract the repo name, language, and description.
 5. **Meetings**: List meeting note files with dates and titles.
+6. **Roadmap**: Read `overview.md` for the timeline table. Count milestones by status (planned, in-progress, completed). Summarize upcoming milestones and their target dates.
 
 For each source, write a **brief summary of key topics and themes** found in the data — not just counts, but what the data is about. This helps the user quickly understand where to look for specific information.
 
@@ -53,6 +55,7 @@ Last updated: <YYYY-MM-DD HH:MM>
 | Slack | <synced/empty> | <date> | <channel count, date range> |
 | Confluence | <synced/empty> | <date> | <page count> |
 | Repos | <synced/empty> | — | <repo count, names> |
+| Roadmap | <available/empty> | — | <milestone count by status> |
 | Meetings | <available/empty> | — | <meeting count> |
 
 ## Jira
@@ -87,6 +90,14 @@ Key files:
 Key files:
 - `repos/<name>.md` — Repository summary
 
+## Roadmap
+
+<Upcoming milestones with target dates and status>
+
+Key files:
+- `roadmap/overview.md` — Timeline and goals
+- `roadmap/milestones/<id>-<slug>.md` — Individual milestones
+
 ## Meetings
 
 <List of recent meetings with dates and topics>
@@ -96,7 +107,7 @@ Omit any section whose data source is empty.
 
 ## Rules
 
-- Always use relative paths from `data/` in the index (e.g. `jira/board.md`, not `data/jira/board.md`)
+- Use relative paths from the project root in the index (e.g. `data/jira/board.md`, `roadmap/overview.md`)
 - Focus on actionable summaries: "what can I find here and why would I look?"
 - Keep each section concise — the index is a map, not a copy of the data
 - When updating, regenerate the entire file from scratch (do not append)

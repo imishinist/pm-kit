@@ -1,0 +1,14 @@
+# {{ name }} — Roadmap
+
+Last updated: {{ created_date }}
+
+## Timeline
+
+| Milestone | Target | Status | Summary |
+|-----------|--------|--------|---------|
+
+<!-- Add rows as milestones are created in roadmap/milestones/. -->
+
+## Goals
+
+<!-- High-level project goals that the roadmap is driving toward. -->
