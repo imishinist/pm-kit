@@ -1,17 +1,58 @@
 # {{ name }} — Project Policy
 
-## Principles
-
-Describe project-specific policies here.
+This file defines project-specific management rules. AI agents read this at startup to understand how this project operates.
 
 ## Communication
 
-- Primary communication channel:
-- Regular meetings:
+- Primary channel:
+- Dev channel:
 - Escalation path:
+- Regular meetings:
 
-## Quality Standards
+## Ticket Management
+
+<!-- How tickets are created, named, and tracked. -->
+
+- Creation timing:
+- Naming convention:
+- Workflow states:
+- Estimation method:
+
+## Sprint / Iteration
+
+<!-- Sprint cadence, ceremonies, and completion criteria. -->
+
+- Sprint length:
+- Ceremonies:
+- Definition of Done:
+
+## Risk Management
+
+<!-- How risks are identified, tracked, and escalated. -->
+
+- Management tool/location:
+- Review frequency:
+- Escalation criteria:
+
+## Reporting
+
+<!-- Stakeholder reporting cadence and format. -->
+
+- Reporting cadence:
+- Audience:
+- Format:
+
+## Review & Quality
 
 - Review criteria:
 - Testing policy:
 - Release criteria:
+
+## External Tools
+
+<!-- Tools and resources managed outside pm-kit. Link and describe their structure so the AI agent knows where to look. -->
+
+<!-- Example:
+- [Risk matrix (Google Sheets)](https://docs.google.com/spreadsheets/d/xxx) — Rows: risk ID, columns: urgency, impact, owner, status
+- [Design docs (Notion)](https://notion.so/xxx) — Design specs organized by feature
+-->
