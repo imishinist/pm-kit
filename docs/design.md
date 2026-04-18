@@ -359,6 +359,7 @@ PJディレクトリで coding agent が実行する skill 定義。`scaffold/sk
 | manage-notes | メモの作成・検索・昇格（risks/decisions への変換） |
 | manage-risks | リスクの作成・更新・レビュー（risk-register 管理） |
 | manage-decisions | ADR の作成・承認・置換 |
+| manage-story-map | ユーザーストーリーマップの作成・スライシング・overview 生成 |
 | build-index | 全データソースの要約・所在マップ（data/INDEX.md）を生成 |
 | overview | 複数PJの横断ビュー・リスク集約 |
 

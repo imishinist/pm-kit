@@ -22,6 +22,7 @@ Scan the following directories under `data/` and summarize what is available:
 | `data/repos/` | `*.md` summary files |
 | `data/meetings/` | `*.md` meeting notes |
 | `roadmap/` | `overview.md`, `milestones/` |
+| `story-map/` | `overview.md`, `backbone/`, `tasks/`, `stories/`, `releases/` |
 
 Skip any directory that is empty or contains only `.gitkeep`.
 
@@ -35,6 +36,7 @@ For each data source that has data:
 4. **Repos**: Read each `<name>.md` summary file. Extract the repo name, language, and description.
 5. **Meetings**: List meeting note files with dates and titles.
 6. **Roadmap**: Read `overview.md` for the timeline table. Count milestones by status (planned, in-progress, completed). Summarize upcoming milestones and their target dates.
+7. **Story Map**: Read `overview.md` for Goal and backbone. Count Activities, Tasks, Stories, Releases. Summarize the Goal and the MVP (R1) slice in one or two sentences.
 
 For each source, write a **brief summary of key topics and themes** found in the data — not just counts, but what the data is about. This helps the user quickly understand where to look for specific information.
 
@@ -56,6 +58,7 @@ Last updated: <YYYY-MM-DD HH:MM>
 | Confluence | <synced/empty> | <date> | <page count> |
 | Repos | <synced/empty> | — | <repo count, names> |
 | Roadmap | <available/empty> | — | <milestone count by status> |
+| Story Map | <available/empty> | — | <activity/task/story/release counts> |
 | Meetings | <available/empty> | — | <meeting count> |
 
 ## Jira
@@ -97,6 +100,17 @@ Key files:
 Key files:
 - `roadmap/overview.md` — Timeline and goals
 - `roadmap/milestones/<id>-<slug>.md` — Individual milestones
+
+## Story Map
+
+<Goal and one-line summary of the MVP slice; counts by level>
+
+Key files:
+- `story-map/overview.md` — Goal, personas, backbone, 2D matrix
+- `story-map/backbone/ACT-<NNN>-<slug>.md` — Activities
+- `story-map/tasks/TASK-<NNN>-<slug>.md` — User Tasks
+- `story-map/stories/STORY-<NNN>-<slug>.md` — Stories
+- `story-map/releases/R<N>-<slug>.md` — Releases
 
 ## Meetings
 
