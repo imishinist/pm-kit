@@ -22,11 +22,17 @@ If a CLI flag can't express what the user wants (e.g. editing body prose), edit 
 ## Commands
 
 ```bash
+uv run pm-kit story-map set-goal "<one sentence>"
+uv run pm-kit story-map set-personas "<free-form text; bullet list if multiple>"
+
 uv run pm-kit story-map add activity --title "<verb phrase>" [--order N] [--persona <name>]
 uv run pm-kit story-map add task --title "<verb phrase>" --parent ACT-NNN [--order N]
 uv run pm-kit story-map add story --title "<title>" --parent TASK-NNN \
-    [--kind happy|unhappy|delightful] [--release R1|R2|later] [--priority must|should|could|wont]
+    [--kind happy|unhappy|delightful] [--release R1|R2|later] [--priority must|should|could|wont] \
+    [--description "As a <persona>, I want <action> so that <benefit>."] \
+    [--acceptance "criterion A; criterion B; criterion C"]
 uv run pm-kit story-map add release --title "<name>" [--id R1] [--target-date YYYY-MM-DD] [--status planned|in-progress|released]
+
 uv run pm-kit story-map render      # regenerate overview.md + releases/ Included sections
 uv run pm-kit story-map check       # consistency check; exits non-zero on errors
 ```
@@ -35,12 +41,14 @@ uv run pm-kit story-map check       # consistency check; exits non-zero on error
 
 ### Initialize the map
 
-When `story-map/` does not yet exist or is empty:
+`story-map/` with its subdirectories (`backbone/`, `tasks/`, `stories/`, `releases/`) is scaffolded by `pm-kit create`. To populate:
 
 1. Run the story-map interview (`scaffold/prompts/story-map-interview.md`) to gather Goal, Personas, Backbone, Walk, Stories, and Slicing.
-2. For each captured node, run the appropriate `pm-kit story-map add <type>` command.
-3. After each phase (backbone → tasks → stories → slicing), run `pm-kit story-map render`.
-4. Edit `overview.md` to fill in the `## Goal` and `## Personas` sections — everything between `<!-- pm-kit:story-map:matrix-start -->` and `...matrix-end -->` is rewritten by `render` and must not be hand-edited.
+2. Save the Goal and Personas via `pm-kit story-map set-goal "..."` and `pm-kit story-map set-personas "..."`.
+3. For each captured node, run the appropriate `pm-kit story-map add <type>` command.
+4. After each phase (backbone → tasks → stories → slicing), run `pm-kit story-map render`.
+
+Everything between `<!-- pm-kit:story-map:*-start/end -->` markers in `overview.md` is rewritten by `render` or `set-*` and must not be hand-edited.
 
 ### Add an Activity
 
@@ -66,8 +74,13 @@ Ask which `kind` (happy / unhappy / delightful) and which release slice, then:
 
 ```bash
 uv run pm-kit story-map add story --title "Email field accepts standard addresses" \
-    --parent TASK-001 --kind happy --release R1
+    --parent TASK-001 --kind happy --release R1 \
+    --description "As a new visitor, I want to enter my email so that I can create an account." \
+    --acceptance "RFC 5322 compliant; Inline validation on blur"
 ```
+
+- `--description`: full user-story prose; goes into the `## Story` section. Ask the user for one sentence in the "As a …, I want …, so that …" form, or paraphrase their own words into that shape.
+- `--acceptance`: semicolon-separated list; each item becomes a bullet in `## Acceptance`. Optional.
 
 Leave `--release` empty if the user hasn't decided yet; the story shows up as **Unscheduled** in the matrix so it stays visible.
 
@@ -105,6 +118,7 @@ Translate warnings into plain-language questions:
 - `empty-activity` → "ACT-002 'Check out' has no tasks yet. Intentional?"
 - `mvp-gap` → "Under 'Check out', nothing is in R1 — so a user can't complete that phase in MVP. Pull something in?"
 - `no-happy-story` → "TASK-003 'Verify email' has only unhappy stories. Add a happy path?"
+- `duplicate-activity-title` / `duplicate-task-title` / `duplicate-story-title` → "I noticed two entries with the same title; should one be merged or renamed?"
 
 ### Promote from a note
 

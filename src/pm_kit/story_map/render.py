@@ -18,6 +18,10 @@ MATRIX_START = "<!-- pm-kit:story-map:matrix-start -->"
 MATRIX_END = "<!-- pm-kit:story-map:matrix-end -->"
 INCLUDED_START = "<!-- pm-kit:story-map:included-start -->"
 INCLUDED_END = "<!-- pm-kit:story-map:included-end -->"
+GOAL_START = "<!-- pm-kit:story-map:goal-start -->"
+GOAL_END = "<!-- pm-kit:story-map:goal-end -->"
+PERSONAS_START = "<!-- pm-kit:story-map:personas-start -->"
+PERSONAS_END = "<!-- pm-kit:story-map:personas-end -->"
 
 
 def _task_cell(tasks_for_activity: list[Task]) -> str:
@@ -109,20 +113,16 @@ def build_overview_content(sm: StoryMap, existing: str | None) -> str:
         return pattern.sub(matrix_block, existing)
 
     # Fresh scaffold
-    counts = (
-        f"- Activities: {len(sm.activities)}\n"
-        f"- Tasks: {len(sm.tasks)}\n"
-        f"- Stories: {len(sm.stories)}\n"
-        f"- Releases: {len(sm.releases)}\n"
-    )
     return (
         "# Story Map\n\n"
         "## Goal\n\n"
-        "<!-- One sentence: who can do what, so that why. -->\n\n"
+        f"{GOAL_START}\n"
+        "_Not set. Run `pm-kit story-map set-goal \"<one sentence>\"`._\n"
+        f"{GOAL_END}\n\n"
         "## Personas\n\n"
-        "<!-- Primary persona(s) this map covers. -->\n\n"
-        "## Summary\n\n"
-        f"{counts}\n"
+        f"{PERSONAS_START}\n"
+        "_Not set. Run `pm-kit story-map set-personas \"<description>\"`._\n"
+        f"{PERSONAS_END}\n\n"
         "## Map\n\n"
         f"{matrix_block}\n"
     )
@@ -156,6 +156,46 @@ def render_release_included(sm: StoryMap) -> dict[str, str]:
             lines = [f"- {s.id} — {s.title}" for s in items]
             out[r.id] = "\n".join(lines) + "\n"
     return out
+
+
+def _ensure_overview(project_dir: Path) -> Path:
+    sm_dir = story_map_dir(project_dir)
+    sm_dir.mkdir(parents=True, exist_ok=True)
+    overview_path = sm_dir / "overview.md"
+    if not overview_path.exists():
+        render(project_dir)
+    return overview_path
+
+
+def _replace_marker_block(text: str, start: str, end: str, heading: str, new_content: str) -> str:
+    """Replace content between start/end markers. If markers are missing but the
+    heading exists, insert the marker block immediately after the heading.
+    If the heading is also missing, append a new section at the end."""
+    block = f"{start}\n{new_content.rstrip()}\n{end}"
+    if start in text and end in text:
+        pattern = re.compile(re.escape(start) + r".*?" + re.escape(end), re.DOTALL)
+        return pattern.sub(block, text)
+    heading_pattern = re.compile(r"(^" + re.escape(heading) + r"\s*\n)(.*?)(?=^## |\Z)", re.DOTALL | re.MULTILINE)
+    m = heading_pattern.search(text)
+    if m:
+        return text[: m.start(2)] + "\n" + block + "\n\n" + text[m.end(2) :]
+    return text.rstrip() + f"\n\n{heading}\n\n{block}\n"
+
+
+def set_goal(project_dir: Path, goal: str) -> Path:
+    overview_path = _ensure_overview(project_dir)
+    text = overview_path.read_text()
+    updated = _replace_marker_block(text, GOAL_START, GOAL_END, "## Goal", goal)
+    overview_path.write_text(updated)
+    return overview_path
+
+
+def set_personas(project_dir: Path, personas: str) -> Path:
+    overview_path = _ensure_overview(project_dir)
+    text = overview_path.read_text()
+    updated = _replace_marker_block(text, PERSONAS_START, PERSONAS_END, "## Personas", personas)
+    overview_path.write_text(updated)
+    return overview_path
 
 
 def render(project_dir: Path) -> list[Path]:

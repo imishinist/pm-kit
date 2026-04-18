@@ -13,12 +13,15 @@ from pm_kit.story_map.io import (
     slugify,
 )
 from pm_kit.story_map.render import (
+    GOAL_START,
     INCLUDED_END,
     INCLUDED_START,
     MATRIX_END,
     MATRIX_START,
+    PERSONAS_START,
     build_matrix,
     render,
+    set_personas,
 )
 
 
@@ -307,3 +310,90 @@ def test_render_on_empty_project_creates_overview(tmp_path):
     overview = (project_dir / "story-map" / "overview.md").read_text()
     assert "# Story Map" in overview
     assert MATRIX_START in overview
+    assert GOAL_START in overview
+    assert PERSONAS_START in overview
+
+
+def test_set_goal_and_personas_roundtrip(tmp_path, monkeypatch):
+    project_dir = _init_project(tmp_path)
+    _invoke(
+        project_dir,
+        ["story-map", "set-goal", "A busy individual can capture tasks quickly."],
+        monkeypatch,
+    )
+    _invoke(
+        project_dir,
+        ["story-map", "set-personas", "busy-individual: knowledge worker with lots of small tasks"],
+        monkeypatch,
+    )
+    overview = (project_dir / "story-map" / "overview.md").read_text()
+    assert "A busy individual can capture tasks quickly." in overview
+    assert "busy-individual: knowledge worker" in overview
+
+    # Re-render must preserve the user content
+    _invoke(project_dir, ["story-map", "add", "activity", "--title", "Capture"], monkeypatch)
+    _invoke(project_dir, ["story-map", "render"], monkeypatch)
+    overview2 = (project_dir / "story-map" / "overview.md").read_text()
+    assert "A busy individual can capture tasks quickly." in overview2
+    assert "busy-individual: knowledge worker" in overview2
+    assert "ACT-001 Capture" in overview2
+
+
+def test_set_personas_accepts_leading_hyphen(tmp_path, monkeypatch):
+    """Bullet-style input starting with '-' must be accepted via the API layer."""
+    project_dir = _init_project(tmp_path)
+    del monkeypatch  # not needed here
+    set_personas(project_dir, "- busy-individual: primary user")
+    overview = (project_dir / "story-map" / "overview.md").read_text()
+    assert "- busy-individual: primary user" in overview
+
+
+def test_set_goal_overwrites_previous_value(tmp_path, monkeypatch):
+    project_dir = _init_project(tmp_path)
+    _invoke(project_dir, ["story-map", "set-goal", "First goal."], monkeypatch)
+    _invoke(project_dir, ["story-map", "set-goal", "Second goal."], monkeypatch)
+    overview = (project_dir / "story-map" / "overview.md").read_text()
+    assert "Second goal." in overview
+    assert "First goal." not in overview
+
+
+def test_add_story_with_description_and_acceptance(tmp_path, monkeypatch):
+    project_dir = _init_project(tmp_path)
+    _invoke(project_dir, ["story-map", "add", "activity", "--title", "Sign up"], monkeypatch)
+    _invoke(
+        project_dir,
+        ["story-map", "add", "task", "--title", "Enter email", "--parent", "ACT-001"],
+        monkeypatch,
+    )
+    _invoke(
+        project_dir,
+        [
+            "story-map",
+            "add",
+            "story",
+            "--title",
+            "Email field accepts standard addresses",
+            "--parent",
+            "TASK-001",
+            "--description",
+            "As a new visitor, I want to enter my email so that I can create an account.",
+            "--acceptance",
+            "RFC 5322 compliant; Inline validation on blur",
+        ],
+        monkeypatch,
+    )
+    story_path = list((project_dir / "story-map" / "stories").glob("STORY-001-*.md"))[0]
+    text = story_path.read_text()
+    assert "As a new visitor, I want to enter my email" in text
+    assert "- RFC 5322 compliant" in text
+    assert "- Inline validation on blur" in text
+
+
+def test_check_detects_duplicate_titles(tmp_path, monkeypatch):
+    project_dir = _init_project(tmp_path)
+    _invoke(project_dir, ["story-map", "add", "activity", "--title", "Sign up"], monkeypatch)
+    _invoke(project_dir, ["story-map", "add", "activity", "--title", "sign up"], monkeypatch)
+    from pm_kit.story_map.check import run_checks
+
+    issues = run_checks(project_dir)
+    assert any(i.code == "duplicate-activity-title" for i in issues)

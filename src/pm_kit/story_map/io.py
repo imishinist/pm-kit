@@ -317,6 +317,15 @@ def save_task(project_dir: Path, t: Task) -> Path:
     return path
 
 
+def _story_body(description: str, acceptance: list[str]) -> str:
+    story_section = description.strip() if description else ""
+    if acceptance:
+        acc_section = "\n".join(f"- {item.strip()}" for item in acceptance if item.strip())
+    else:
+        acc_section = ""
+    return f"\n## Story\n\n{story_section}\n\n## Acceptance\n\n{acc_section}\n\n## Notes\n"
+
+
 def save_story(project_dir: Path, s: Story) -> Path:
     directory = _dir_for(project_dir, "story")
     directory.mkdir(parents=True, exist_ok=True)
@@ -334,7 +343,7 @@ def save_story(project_dir: Path, s: Story) -> Path:
         "created": s.created or _today(),
         "updated": s.updated or _today(),
     }
-    body = s.body or "\n## Story\n\n## Acceptance\n\n## Notes\n"
+    body = s.body or _story_body("", [])
     path.write_text(
         _render_frontmatter(
             ["id", "title", "parent", "release", "kind", "priority", "created", "updated"], fm
@@ -393,7 +402,10 @@ def add_story(
     kind: StoryKind,
     release: str,
     priority: StoryPriority,
+    description: str = "",
+    acceptance: list[str] | None = None,
 ) -> Story:
+    body = _story_body(description, acceptance or [])
     s = Story(
         id=next_id(project_dir, "story"),
         title=title,
@@ -401,6 +413,7 @@ def add_story(
         release=release,
         kind=kind,
         priority=priority,
+        body=body,
     )
     save_story(project_dir, s)
     return s

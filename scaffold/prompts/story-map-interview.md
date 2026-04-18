@@ -166,7 +166,18 @@ Let the user decide whether to pull something in.
 
 ## Applying Results
 
-All writes go through the `pm-kit story-map` CLI (see `manage-story-map` skill for the full command reference). Never hand-write frontmatter — the CLI handles ID allocation, `order` shifting, and file layout. After each phase, run `uv run pm-kit story-map render` to keep `overview.md` current, and run `uv run pm-kit story-map check` at the end to surface any gaps.
+All writes go through the `pm-kit story-map` CLI (see `manage-story-map` skill for the full command reference). Never hand-write frontmatter — the CLI handles ID allocation, `order` shifting, and file layout.
+
+Key commands per phase:
+
+- **Phase 1 (Goal)** → `uv run pm-kit story-map set-goal "<one sentence>"`
+- **Phase 2 (Persona)** → `uv run pm-kit story-map set-personas "<description>"` (use a bullet list for multiple)
+- **Phase 3 (Backbone)** → `uv run pm-kit story-map add activity --title "<verb>"` per Activity
+- **Phase 4 (Walk)** → `uv run pm-kit story-map add task --title "<verb>" --parent ACT-NNN` per Task
+- **Phase 5 (Stories)** → `uv run pm-kit story-map add story --title "..." --parent TASK-NNN --kind happy|unhappy|delightful --description "As a …, I want …, so that …" [--acceptance "A; B; C"]`
+- **Phase 6 (Slicing)** → pass `--release R1` / `--release R2` on `add story`, or edit the story file's `release` field directly for re-slicing
+
+After each phase, run `uv run pm-kit story-map render` to keep `overview.md` current. At the end, run `uv run pm-kit story-map check` and translate any warnings for the user.
 
 ## When the User Wants to Skip Ahead
 

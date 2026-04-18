@@ -123,6 +123,10 @@ def create(name: str, dest_path: str | None) -> None:
         "roadmap/milestones",
         "decisions",
         "notes",
+        "story-map/backbone",
+        "story-map/tasks",
+        "story-map/stories",
+        "story-map/releases",
     ]:
         d = project_dir / subdir
         d.mkdir(parents=True)

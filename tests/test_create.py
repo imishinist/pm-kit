@@ -31,6 +31,10 @@ def test_create_generates_directory_structure(tmp_path, monkeypatch):
     assert (project_dir / "data" / "confluence" / ".gitkeep").is_file()
     assert (project_dir / "data" / "meetings" / ".gitkeep").is_file()
     assert (project_dir / "decisions" / ".gitkeep").is_file()
+    assert (project_dir / "story-map" / "backbone" / ".gitkeep").is_file()
+    assert (project_dir / "story-map" / "tasks" / ".gitkeep").is_file()
+    assert (project_dir / "story-map" / "stories" / ".gitkeep").is_file()
+    assert (project_dir / "story-map" / "releases" / ".gitkeep").is_file()
 
     # Symlinks
     assert (project_dir / "knowledge").is_symlink()

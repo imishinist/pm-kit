@@ -69,6 +69,49 @@ def run_checks(project_dir: Path) -> list[Issue]:
                 Issue("warning", "no-happy-story", f"{t.id} {t.title} has no happy story")
             )
 
+    # Duplicate titles (normalized): activities globally; tasks/stories within parent
+    def _norm(s: str) -> str:
+        return " ".join(s.lower().split())
+
+    activity_titles: dict[str, list[str]] = {}
+    for a in sm.activities:
+        activity_titles.setdefault(_norm(a.title), []).append(a.id)
+    for title_key, ids in activity_titles.items():
+        if len(ids) > 1:
+            issues.append(
+                Issue(
+                    "warning",
+                    "duplicate-activity-title",
+                    f"Activities {', '.join(ids)} share the title '{title_key}'",
+                )
+            )
+
+    task_titles: dict[tuple[str, str], list[str]] = {}
+    for t in sm.tasks:
+        task_titles.setdefault((t.parent, _norm(t.title)), []).append(t.id)
+    for (parent, title_key), ids in task_titles.items():
+        if len(ids) > 1:
+            issues.append(
+                Issue(
+                    "warning",
+                    "duplicate-task-title",
+                    f"Tasks {', '.join(ids)} under {parent} share the title '{title_key}'",
+                )
+            )
+
+    story_titles: dict[tuple[str, str], list[str]] = {}
+    for s in sm.stories:
+        story_titles.setdefault((s.parent, _norm(s.title)), []).append(s.id)
+    for (parent, title_key), ids in story_titles.items():
+        if len(ids) > 1:
+            issues.append(
+                Issue(
+                    "warning",
+                    "duplicate-story-title",
+                    f"Stories {', '.join(ids)} under {parent} share the title '{title_key}'",
+                )
+            )
+
     # MVP completeness: every Activity should have at least one R1 story
     if "R1" in release_ids:
         task_parent_of_story = {t.id: t.parent for t in sm.tasks}

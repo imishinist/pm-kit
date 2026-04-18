@@ -13,6 +13,7 @@ from pm_kit.story_map.io import (
     add_task,
 )
 from pm_kit.story_map.render import render as render_all
+from pm_kit.story_map.render import set_goal, set_personas
 
 
 @click.group("story-map")
@@ -61,9 +62,28 @@ def add_task_cmd(title: str, parent: str, order: int | None) -> None:
     type=click.Choice(["must", "should", "could", "wont"]),
     default="should",
 )
-def add_story_cmd(title: str, parent: str, kind: str, release: str, priority: str) -> None:
+@click.option(
+    "--description",
+    default="",
+    help="Full user-story prose, e.g. 'As a busy individual, I want X so that Y'.",
+)
+@click.option(
+    "--acceptance",
+    default="",
+    help="Acceptance criteria separated by ';' — each becomes a bullet.",
+)
+def add_story_cmd(
+    title: str,
+    parent: str,
+    kind: str,
+    release: str,
+    priority: str,
+    description: str,
+    acceptance: str,
+) -> None:
     """Add a Story under a User Task."""
     project_dir = find_project_dir()
+    acceptance_items = [p.strip() for p in acceptance.split(";") if p.strip()]
     s = add_story(
         project_dir,
         title=title,
@@ -71,6 +91,8 @@ def add_story_cmd(title: str, parent: str, kind: str, release: str, priority: st
         kind=kind,  # type: ignore[arg-type]
         release=release,
         priority=priority,  # type: ignore[arg-type]
+        description=description,
+        acceptance=acceptance_items,
     )
     click.echo(f"Created {s.id} '{s.title}' under {s.parent} [{s.kind}, {s.release or 'unscheduled'}]")
 
@@ -89,6 +111,24 @@ def add_release_cmd(title: str, id_: str | None, target_date: str, status: str) 
     project_dir = find_project_dir()
     r = add_release(project_dir, title=title, id_=id_, target_date=target_date, status=status)  # type: ignore[arg-type]
     click.echo(f"Created {r.id} '{r.title}'")
+
+
+@story_map.command("set-goal")
+@click.argument("goal")
+def set_goal_cmd(goal: str) -> None:
+    """Set the one-sentence Goal in overview.md."""
+    project_dir = find_project_dir()
+    path = set_goal(project_dir, goal)
+    click.echo(f"Updated Goal in {path.relative_to(project_dir)}")
+
+
+@story_map.command("set-personas")
+@click.argument("personas")
+def set_personas_cmd(personas: str) -> None:
+    """Set the Personas section in overview.md (free-form text; use bullet list for multiple)."""
+    project_dir = find_project_dir()
+    path = set_personas(project_dir, personas)
+    click.echo(f"Updated Personas in {path.relative_to(project_dir)}")
 
 
 @story_map.command()
