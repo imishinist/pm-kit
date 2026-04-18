@@ -8,19 +8,27 @@ Create, update, and slice the story map in `story-map/`. The map is the product'
 
 Before any operation, read `knowledge/story-mapping.md` for concepts, file formats, ID rules, and granularity guidance.
 
-## Directory Structure
+## How to Use This Skill
 
-```
-story-map/
-├── overview.md
-├── backbone/
-│   └── ACT-NNN-<slug>.md
-├── tasks/
-│   └── TASK-NNN-<slug>.md
-├── stories/
-│   └── STORY-NNN-<slug>.md
-└── releases/
-    └── R<N>-<slug>.md
+All file operations — ID allocation, frontmatter writing, `order` shifting, matrix rendering, consistency checks — are handled by the `pm-kit story-map` CLI. **Do not write or edit story-map files by hand.** Your job is to:
+
+1. Decide *what* to add / update based on the user's answers (Activity vs Task vs Story; titles; kind; release).
+2. Call the CLI to persist it.
+3. Regenerate `overview.md` after batch edits.
+4. Run the consistency check and report warnings to the user in plain language.
+
+If a CLI flag can't express what the user wants (e.g. editing body prose), edit the file directly — but keep the frontmatter block (between `---` markers) untouched.
+
+## Commands
+
+```bash
+uv run pm-kit story-map add activity --title "<verb phrase>" [--order N] [--persona <name>]
+uv run pm-kit story-map add task --title "<verb phrase>" --parent ACT-NNN [--order N]
+uv run pm-kit story-map add story --title "<title>" --parent TASK-NNN \
+    [--kind happy|unhappy|delightful] [--release R1|R2|later] [--priority must|should|could|wont]
+uv run pm-kit story-map add release --title "<name>" [--id R1] [--target-date YYYY-MM-DD] [--status planned|in-progress|released]
+uv run pm-kit story-map render      # regenerate overview.md + releases/ Included sections
+uv run pm-kit story-map check       # consistency check; exits non-zero on errors
 ```
 
 ## Operations
@@ -30,88 +38,86 @@ story-map/
 When `story-map/` does not yet exist or is empty:
 
 1. Run the story-map interview (`scaffold/prompts/story-map-interview.md`) to gather Goal, Personas, Backbone, Walk, Stories, and Slicing.
-2. Create the directory structure above.
-3. Write `overview.md` with Goal, Personas, Backbone order.
-4. Write files for all Activities, Tasks, Stories, and Releases captured in the interview.
-5. Regenerate the matrix in `overview.md` (see below).
+2. For each captured node, run the appropriate `pm-kit story-map add <type>` command.
+3. After each phase (backbone → tasks → stories → slicing), run `pm-kit story-map render`.
+4. Edit `overview.md` to fill in the `## Goal` and `## Personas` sections — everything between `<!-- pm-kit:story-map:matrix-start -->` and `...matrix-end -->` is rewritten by `render` and must not be hand-edited.
 
 ### Add an Activity
 
-1. Determine the next `ACT-NNN` ID from existing files in `backbone/`.
-2. Ask the user where it goes in the backbone order (before/after which existing Activity). Update `order` on this and any shifted siblings.
-3. Create `backbone/ACT-NNN-<slug>.md`.
-4. Regenerate `overview.md`.
+Ask the user the title and where it fits in the backbone. Then:
+
+```bash
+uv run pm-kit story-map add activity --title "Sign up" --order 1 --persona new-visitor
+```
+
+If `--order` points to an occupied position, the CLI shifts existing siblings. After adding, run `pm-kit story-map render`.
 
 ### Add a User Task
 
-1. Identify the parent Activity.
-2. Determine the next `TASK-NNN` ID.
-3. Ask for the position within the Activity. Shift `order` of following siblings if needed.
-4. Create `tasks/TASK-NNN-<slug>.md` with `parent: ACT-NNN`.
-5. Regenerate `overview.md`.
+```bash
+uv run pm-kit story-map add task --title "Enter email" --parent ACT-001
+```
+
+Append by default, or pass `--order N` to insert at a specific position.
 
 ### Add a Story
 
-1. Identify the parent User Task.
-2. Determine the next `STORY-NNN` ID.
-3. Ask which `kind` (happy / unhappy / delightful) and which `release` (R1, R2, later, or empty).
-4. Create `stories/STORY-NNN-<slug>.md` with `parent: TASK-NNN`.
-5. Regenerate `overview.md`.
+Ask which `kind` (happy / unhappy / delightful) and which release slice, then:
 
-### Update a Story's release (slicing)
+```bash
+uv run pm-kit story-map add story --title "Email field accepts standard addresses" \
+    --parent TASK-001 --kind happy --release R1
+```
 
-1. Edit the `release` field in the story frontmatter.
-2. Update the `updated` field.
-3. Regenerate `overview.md`.
+Leave `--release` empty if the user hasn't decided yet; the story shows up as **Unscheduled** in the matrix so it stays visible.
+
+### Re-slice (move a Story to a different release)
+
+The CLI does not yet have a rename/move command. Edit the story file's `release` field directly, keep other frontmatter fields intact, then run `pm-kit story-map render`.
 
 When slicing many stories at once, ask the user per-Task ("For TASK-001 Enter email — STORY-001 happy, STORY-002 unhappy: which go in R1?") rather than per-story.
 
 ### Create or update a Release
 
-1. Determine the next `R<N>` ID (R1, R2, ...) or reuse `later`.
-2. Create `releases/R<N>-<slug>.md` with Goal and target_date if known.
-3. The `## Included` list is regenerated by scanning stories whose `release` field matches this ID. Do not hand-edit it.
+```bash
+uv run pm-kit story-map add release --title "MVP" --id R1 --target-date 2026-06-30
+```
+
+The `## Included` section of the release file is generated from stories whose `release` field matches this ID. Do not hand-edit it; re-run `pm-kit story-map render` instead.
 
 ### Regenerate overview.md
 
-This is not an edit — regenerate the whole file from the current state of `backbone/`, `tasks/`, `stories/`, `releases/`.
+```bash
+uv run pm-kit story-map render
+```
 
-Build the matrix:
-
-1. List Activities sorted by `order` — this is the column order.
-2. For each Activity, list its Tasks sorted by `order`.
-3. For each (Activity, Release) cell, list Story IDs whose `parent`'s parent is that Activity and whose `release` matches.
-4. Render as the Markdown table shown in `knowledge/story-mapping.md`.
-
-Also regenerate each `releases/R<N>-<slug>.md`'s `## Included` section from the same scan.
+Call this after any batch of adds. It rewrites the matrix in `overview.md` and the `## Included` section of each release file, preserving user-authored content (Goal, Personas, Excluded notes).
 
 ### Consistency check
 
-When asked to check the map, or after batch edits:
+```bash
+uv run pm-kit story-map check
+```
 
-- Every Task has a `parent` that exists in `backbone/`.
-- Every Story has a `parent` that exists in `tasks/`.
-- Every Story's `release` either matches an existing release file, is `later`, or is empty.
-- No Activity has zero Tasks (warn).
-- No Task has zero Stories (warn).
-- Every Task has at least one `kind: happy` story (warn if missing).
-- MVP release forms a complete walk: at least one story with `release: R1` exists under every Activity that's required for the user to finish the Goal. If not, flag which Activities are empty.
+Reports issues as `[error]` or `[warning]` lines. Errors (orphan references, unknown releases) must be fixed; warnings (empty Activity, no-happy-story, MVP gap) should be surfaced to the user for confirmation — don't auto-fix.
 
-Report findings; do not auto-fix.
+Translate warnings into plain-language questions:
+- `empty-activity` → "ACT-002 'Check out' has no tasks yet. Intentional?"
+- `mvp-gap` → "Under 'Check out', nothing is in R1 — so a user can't complete that phase in MVP. Pull something in?"
+- `no-happy-story` → "TASK-003 'Verify email' has only unhappy stories. Add a happy path?"
 
 ### Promote from a note
 
 When a note in `notes/` describes a user need that belongs in the map:
 
 1. Ask whether it's an Activity, Task, or Story, and where it fits.
-2. Create the corresponding file.
+2. Run the corresponding `pm-kit story-map add ...` command.
 3. Append `→ Promoted to STORY-NNN` (or ACT/TASK) to the original note.
 
 ## Rules
 
-- IDs are sequential and never reused.
-- `overview.md` and `releases/R<N>-*.md`'s `## Included` section are **generated** — never hand-edit them; edit the source files and regenerate.
-- When shifting `order`, update every affected sibling in the same operation.
-- Keep `updated` fresh on any file touched.
-- Do not create an Activity/Task without at least placeholder intent — empty backbone nodes clutter the map.
-- If the user is unsure about slicing, leave `release` empty rather than guessing; empty stories show up in overview.md as "Unscheduled" so they stay visible.
+- Use the CLI for all file writes. Never hand-author frontmatter.
+- After any batch of adds, run `render` before reporting results to the user.
+- The matrix in `overview.md` and the `## Included` section of release files are **generated** — regions between the `<!-- pm-kit:story-map:*-start/end -->` markers are rewritten each render.
+- If the user is unsure about slicing, leave `--release` empty rather than guessing; unscheduled stories stay visible in the matrix.
+- Run `check` before declaring the map complete. Surface warnings; let the user decide.

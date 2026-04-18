@@ -16,6 +16,7 @@ Always communicate with the user in Japanese unless they specify otherwise.
   - `project.py` — project.yaml loader utility
   - `sync/` — Jira, Slack, Confluence data fetchers (raw JSON output)
   - `adapter/` — Claude Code, Kiro config generators
+  - `story_map/` — `pm-kit story-map` commands (add/render/check)
 - `scaffold/` — Project scaffold templates (.template files use Jinja2)
   - `skills/` — Agent skill definitions (sync, daily-check, overview)
   - `prompts/` — AI instruction prompts (system, risk-review, create-interview)
@@ -31,6 +32,7 @@ uv run pm-kit update <path>     # Update project prompts and skills from scaffol
 uv run pm-kit sync {jira,slack,confluence}  # Fetch data as JSON to stdout
 uv run pm-kit schema {jira,slack,confluence}  # Show sync output JSON schema
 uv run pm-kit adapter {claude,kiro}  # Generate adapter configs
+uv run pm-kit story-map {add,render,check}  # Story map CRUD, matrix regen, consistency check
 ```
 
 For build, test, lint, and type check commands, see [CONTRIBUTING.md](CONTRIBUTING.md).

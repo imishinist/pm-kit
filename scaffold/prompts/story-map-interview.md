@@ -166,7 +166,7 @@ Let the user decide whether to pull something in.
 
 ## Applying Results
 
-All writes go to `story-map/` using the file formats in `knowledge/story-mapping.md`. Use the `manage-story-map` skill's operations (Add Activity / Add Task / Add Story) rather than writing files ad hoc, so IDs and order stay consistent.
+All writes go through the `pm-kit story-map` CLI (see `manage-story-map` skill for the full command reference). Never hand-write frontmatter — the CLI handles ID allocation, `order` shifting, and file layout. After each phase, run `uv run pm-kit story-map render` to keep `overview.md` current, and run `uv run pm-kit story-map check` at the end to surface any gaps.
 
 ## When the User Wants to Skip Ahead
 
